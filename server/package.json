@@ -1,7 +1,7 @@
 {
-  "name": "app_d",
+  "name": "food-by-me",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application for food sharing",
   "main": "app.js",
   "scripts": {
     "dev": "cp .env_dev .env && nodemon ./src/app.ts",
@@ -10,7 +10,7 @@
     "testAuth": "cp .env_test .env && jest --detectOpenHandles --forceExit auth.test.ts",
     "testPosts": "cp .env_test .env && jest --detectOpenHandles --forceExit posts.test.ts"
   },
-  "author": "Eliav Menachi",
+  "author": "Adir Itzhaki & Eylon Fayena",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
