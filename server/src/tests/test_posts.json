@@ -2,11 +2,11 @@
     {
         "title": "Test Post 1",
         "content": "Test Content 1",
-        "owner": "Eliav"
+        "owner": "Adir"
     },
     {
         "title": "Test Post 2",
         "content": "Test Content 2",
-        "owner": "Eliav2"
+        "owner": "Eylon"
     }
 ]
