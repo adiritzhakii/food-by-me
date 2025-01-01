@@ -2,21 +2,55 @@ import request from "supertest";
 import appInit from "../server";
 import mongoose from "mongoose";
 import commentsModel, { IComments } from "../models/comments_model";
-
+import postModel, { IPost } from '../models/posts_model'
+import testPostsData from './test_posts.json'
 import testCommentsData from "./test_comments.json";
 import { Express } from "express";
+import testUserData from "./test_users.json";
+import userModel from "../models/user_model";
 
 let app: Express;
 
-const CommentsData: IComments[] = testCommentsData;
-let testComments: IComments[] = [];
+interface Comment {
+  _id?: string;
+  owner?: string;
+  postId: string;
+  comment: string
+}
+
+const CommentsData: Comment[] = testCommentsData;
 
 const baseUrl = "/comments";
+
+interface IPostDB extends IPost {
+  _id: string;
+}
+
+interface User {
+  _id: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+const loginNewUser = async (userSampleIndex: number): Promise<User> => {
+  await request(app).post("/auth/register").send(testUserData[userSampleIndex])
+  const loginResponse = await request(app).post("/auth/login").send(testUserData[userSampleIndex]);
+  return loginResponse.body;
+}
+
+const createNewPost = async (accessToken: string): Promise<IPostDB> => {
+  const postResponse = await request(app).post("/posts").
+    set("authorization", "JWT " + accessToken).send(testPostsData[0])
+  return postResponse.body;
+}
+
 
 beforeAll(async () => {
   console.log("Before all tests");
   app = await appInit();
   await commentsModel.deleteMany();
+  await postModel.deleteMany();
+  await userModel.deleteMany();
 });
 
 afterAll(() => {
@@ -25,24 +59,6 @@ afterAll(() => {
 });
 
 describe("Comments Test", () => {
-  test("Test to create a post for the comments", async () => {
-    const postResp = await request(app).post("/posts").send({
-      title: "Test Post",
-      content: "Test Content",
-      owner: "Adir"
-    });
-  
-    const thePostId = postResp.body._id;
-    testComments = CommentsData.map((comment) => {
-      return {
-        comment: comment.comment,
-        owner: comment.owner,
-        postId: thePostId
-      }
-    });
-    console.log(testComments);
-  });
-
   test("Test get all comments empty", async () => {
     const response = await request(app).get(baseUrl);
     expect(response.statusCode).toBe(200);
@@ -50,48 +66,66 @@ describe("Comments Test", () => {
   });
 
   test("Test create new comment", async () => {
-    for (let comment of testComments) {
-      const response = await request(app).post(baseUrl).send(comment);
+    const {_id: userId, accessToken} = await loginNewUser(0)
+    const { _id: postId } = await createNewPost(accessToken)
+    for (let comment of CommentsData) {
+      const response = await request(app).post(baseUrl).
+      set("authorization", "JWT " + accessToken).send({...comment, postId});
       expect(response.statusCode).toBe(201);
       expect(response.body.comment).toBe(comment.comment);
-      expect(response.body.postId).toBe(comment.postId);
-      expect(response.body.owner).toBe(comment.owner);
-      comment._id = response.body._id;
+      expect(response.body.postId).toBe(postId);
+      expect(response.body.owner).toBe(userId);
     }
   });
 
-  // test("Test get all comments", async () => {
-  //   const response = await request(app).get(baseUrl);
-  //   expect(response.statusCode).toBe(200);
-  //   expect(response.body.length).toBe(testComments.length);
-  // });
+  test("Test get all comments", async () => {
+    const response = await request(app).get(baseUrl);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(CommentsData.length);
+  });
 
-  // test("Test get comment by id", async () => {
-  //   const response = await request(app).get(baseUrl + "/" + testComments[0]._id);
-  //   expect(response.statusCode).toBe(200);
-  //   expect(response.body._id).toBe(testComments[0]._id);
-  // });
+  test("Test get comment by id", async () => {
+    const getAllResponse = await request(app).get(baseUrl);
+    expect(getAllResponse.statusCode).toBe(200);
+    expect(getAllResponse.body.length).toBe(CommentsData.length);
 
-  // test("Test filter comments by owner", async () => {
-  //   const response = await request(app).get(baseUrl + "?owner=" + testComments[0].owner
-  //   );
-  //   expect(response.statusCode).toBe(200);
-  //   expect(response.body.length).toBe(1);
-  // });
+    const response = await request(app).get(baseUrl + "/" + getAllResponse.body[0]._id);
+    expect(response.statusCode).toBe(200);
+    expect(response.body._id).toBe(getAllResponse.body[0]._id);
+  });
 
-  // test("Test Delete comment", async () => {
-  //   const response = await request(app).delete(baseUrl + "/" + testComments[0]._id);
-  //   expect(response.statusCode).toBe(200);
+  test("Test filter comments by owner", async () => {
+    const { accessToken} = await loginNewUser(1)
+    const { _id: postId } = await createNewPost(accessToken)
+    await request(app).post(baseUrl).set("authorization", "JWT " + accessToken).
+      send({...testCommentsData[0], postId});
 
-  //   const responseGet = await request(app).get(baseUrl + "/" + testComments[0]._id);
-  //   expect(responseGet.statusCode).toBe(404);
-  // });
+    const getAllResponse = await request(app).get(baseUrl);
+    expect(getAllResponse.body.length).toBe(3)
+    
+    const comment = getAllResponse.body[0];
+    const response = await request(app).get(baseUrl + "?owner=" + comment.owner);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(2);
+  });
 
-  // test("Test create new comment fail", async () => {
-  //   const response = await request(app).post(baseUrl).send({
-  //     comment: "Test comment",
-  //     postId: "123",
-  //   });
-  //   expect(response.statusCode).toBe(400);
-  // });
+  test("Test Delete comment", async () => {
+    const { accessToken } = await loginNewUser(1)
+    const getAllResponse = await request(app).get(baseUrl);
+    
+    const {_id} = getAllResponse.body[0];
+    const response = await request(app).delete(baseUrl + "/" + _id)
+      .set("authorization", "JWT " + accessToken);
+    expect(response.statusCode).toBe(200);
+    
+    const responseGet = await request(app).get(baseUrl + "/" + _id);
+    expect(responseGet.statusCode).toBe(404);
+  });
+
+  test("Test create new comment fail", async () => {
+    const response = await request(app).post(baseUrl).send({
+      comment: "Test comment"
+    });
+    expect(response.statusCode).toBe(401);
+  });
 });

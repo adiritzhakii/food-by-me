@@ -12,6 +12,24 @@ import { authMiddleware } from "../controllers/auth_controller";
 */
 
 /**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Comment:
+ *       type: object
+ *       required:
+ *         - title
+ *         - content
+ *       properties:
+ *         postId:
+ *           type: string
+ *           example: 60d0fe4f5311236168a109ca
+ *         comment:
+ *           type: string
+ *           example: This is the content of the comment.
+ */
+
+/**
 * @swagger
 * /comments:
 *   get:
@@ -61,7 +79,9 @@ router.get("/:id", (req, res) => {
 * /comments:
 *   post:
 *     summary: Create a new comment
-*     tags: [Comments]
+*     description: Creates a new comment
+*     tags:
+*       - Comments
 *     security:
 *       - bearerAuth: []
 *     requestBody:

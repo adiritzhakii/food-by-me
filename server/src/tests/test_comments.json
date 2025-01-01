@@ -1,12 +1,10 @@
 [
     {
         "comment": "Test comment 1",
-        "owner": "Adir",
         "postId": ""
     },
     {
         "comment": "Test comment 2",
-        "owner": "Eylon",
         "postId": ""
     }
 ]

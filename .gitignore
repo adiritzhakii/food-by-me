@@ -1,3 +1,6 @@
+# Mongodb
+docker-compose.yml
+.mongodb
 # DevContainer
 .devcontainer
 

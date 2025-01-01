@@ -21,10 +21,6 @@ app.use("/posts", postsRoute);
 app.use("/auth", authController);
 app.use("/comments", commentsRoute);
 
-app.get("/about", (req, res) => {
-  res.send("Hello World!");
-});
-
 const options = {
   definition: {
     openapi: "3.0.0",

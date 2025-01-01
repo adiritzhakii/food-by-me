@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export interface IComments {
-  _id?: string;
   comment: string;
   owner: string;
   postId: string;

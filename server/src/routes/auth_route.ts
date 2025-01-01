@@ -36,7 +36,7 @@ import authController from "../controllers/auth_controller";
 *           type: string
 *           description: The user password
 *       example:
-*         email: 'bob@gmail.com'
+*         email: 'alice@gmail.com'
 *         password: '123456'
 */
 

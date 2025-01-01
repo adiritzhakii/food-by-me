@@ -24,7 +24,7 @@ type Post = {
   _id?: string;
   title: string;
   content: string;
-  owner: string;
+  owner?: string;
 }
 
 const testPosts: Post[] = testPostsData;

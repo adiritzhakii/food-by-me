@@ -22,18 +22,12 @@ import { authMiddleware } from "../controllers/auth_controller";
  *         - title
  *         - content
  *       properties:
- *         _id:
- *           type: string
- *           example: 60d0fe4f5311236168a109ca
  *         title:
  *           type: string
  *           example: My First Post
  *         content:
  *           type: string
  *           example: This is the content of the post.
- *         author:
- *           type: string
- *           example: 60d0fe4f5311236168a109ca
  */
 
 
