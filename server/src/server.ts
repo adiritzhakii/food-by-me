@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import postsRoute from "./routes/posts_route";
 import authController from "./routes/auth_route";
+import commentsRoute from "./routes/comments_route";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 
@@ -18,10 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/posts", postsRoute);
 app.use("/auth", authController);
-
-app.get("/about", (req, res) => {
-  res.send("Hello World!");
-});
+app.use("/comments", commentsRoute);
 
 const options = {
   definition: {
