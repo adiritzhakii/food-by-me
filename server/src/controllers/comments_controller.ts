@@ -19,6 +19,4 @@ class CommentsController extends BaseController<IComments> {
 }
 
 
-// const commentsController = new BaseController<IComments>(commentsModel);
-
 export default new CommentsController();
