@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import {usePostAuthLoginMutation} from '../store/serverApi';
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [ serverLogin, {isError, isSuccess, error: serverError} ] = usePostAuthLoginMutation();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -14,9 +17,20 @@ const Login = () => {
       return
     }
     // Handle login logic here
-    setError(null)
-    alert('Logged in successfully!')
+    serverLogin({user: {email, password}})
   }
+  
+  useEffect(() => {
+    if(isSuccess){
+      alert('Logged in successfully!');
+      navigate('/')
+    }},[isSuccess]);
+    
+  useEffect(() => {
+    if(isError){
+      console.error("Registration failed: ", error);
+    }
+  },[isError,error])
 
   return (
     <Container component="main" maxWidth="xs" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
