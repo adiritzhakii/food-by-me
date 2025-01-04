@@ -13,7 +13,7 @@ const register = async (req: Request, res: Response) => {
             password: hashedPassword
         });
         res.status(200).send(user);
-    } catch (err) {
+    } catch (err: any) {
         res.status(400).send("wrong email or password");
     }
 };

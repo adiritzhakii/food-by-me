@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { usePostAuthRegisterMutation } from '../store/serverApi'
 
 const Register = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [serverRegister, {error: errorFromServer, isError, isSuccess}] = usePostAuthRegisterMutation();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -19,9 +22,20 @@ const Register = () => {
       return
     }
     // Handle registration logic here
-    setError(null)
-    alert('Registered successfully!')
+    serverRegister({user: {email, password}})
+
   }
+  useEffect(() => {
+    if(isSuccess){
+      alert('Registered successfully!');
+      navigate('/login')
+    }},[isSuccess]);
+    
+  useEffect(() => {
+    if(isError){
+      console.error("Registration failed: ", error);
+    }
+  },[isError,error])
 
   return (
     <>
