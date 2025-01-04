@@ -9,6 +9,7 @@ import authController from "./routes/auth_route";
 import commentsRoute from "./routes/comments_route";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import cors from "cors";
 
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
@@ -16,6 +17,7 @@ db.once("open", () => console.log("Connected to Database"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use("/posts", postsRoute);
 app.use("/auth", authController);
