@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import { usePostAuthRegisterMutation } from '../store/serverApi'
+import OauthGoogle from '../components/OauthGoogle'
 
 const Register = () => {
   const [email, setEmail] = useState('')
@@ -21,6 +22,7 @@ const Register = () => {
       setError('Passwords do not match.')
       return
     }
+
     // Handle registration logic here
     serverRegister({user: {email, password}})
 
@@ -33,9 +35,9 @@ const Register = () => {
     
   useEffect(() => {
     if(isError){
-      console.error("Registration failed: ", error);
+      console.error("Registration failed: ", errorFromServer);
     }
-  },[isError,error])
+  },[isError,errorFromServer])
 
   return (
     <>
@@ -45,7 +47,7 @@ const Register = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <img src="/food-by-me-icon.png" alt="App Icon" style={{ width: 70, height: 70, marginRight: 10 }} />
         </Box>
-        <Typography variant="h5" component="h1" sx={{ marginTop: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ marginTop: 2, marginBottom: 2 }}>
           Register
         </Typography>
 
@@ -54,6 +56,8 @@ const Register = () => {
             {error}
           </Typography>
         )}
+
+        <OauthGoogle />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -110,6 +114,7 @@ const Register = () => {
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3 }}>
             Register
           </Button>
+          
         </Box>
         <Grid container>
           <Grid item xs>

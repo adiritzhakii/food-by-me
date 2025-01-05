@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import {usePostAuthLoginMutation} from '../store/serverApi';
+import OauthGoogle from '../components/OauthGoogle'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -24,13 +25,13 @@ const Login = () => {
     if(isSuccess){
       alert('Logged in successfully!');
       navigate('/')
-    }},[isSuccess]);
+    }},[isSuccess, navigate]);
     
   useEffect(() => {
     if(isError){
-      console.error("Registration failed: ", error);
+      console.error("Registration failed: ", serverError); // TODO: why serverError is null
     }
-  },[isError,error])
+  },[isError,serverError])
 
   return (
     <Container component="main" maxWidth="xs" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -38,7 +39,7 @@ const Login = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
           <img src="/food-by-me-icon.png" alt="App Icon" style={{ width: 70, height: 70, marginRight: 10 }} />
         </Box>
-        <Typography variant="h5" component="h1" sx={{ marginTop: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ marginTop: 2, marginBottom: 2 }}>
           Sign In
         </Typography>
 
@@ -47,6 +48,8 @@ const Login = () => {
             {error}
           </Typography>
         )}
+
+        <OauthGoogle />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
