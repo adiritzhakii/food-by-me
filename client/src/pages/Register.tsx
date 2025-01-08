@@ -56,7 +56,7 @@ const Register = () => {
           Register
         </Typography>
 
-        <OauthGoogle />
+        <OauthGoogle route='register' />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField

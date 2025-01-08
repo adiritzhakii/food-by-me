@@ -48,7 +48,7 @@ const Login = () => {
           Sign In
         </Typography>
 
-        <OauthGoogle />
+        <OauthGoogle route='login' />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField

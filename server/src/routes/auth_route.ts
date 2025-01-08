@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
-import authController from "../controllers/auth_controller";
+import authController, { loginOAuthHandler, registerOAuthHandler } from "../controllers/auth_controller";
+
 
 /**
 * @swagger
@@ -173,6 +174,111 @@ router.post("/logout", authController.logout);
  *         description: Internal server error
  */
 router.post("/refresh", authController.refresh);
+
+
+/**
+ * @swagger
+ * /auth/oauth-register:
+ *   post:
+ *     summary: Register a new user via OAuth Google
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 example: 
+ *     responses:
+ *       200:
+ *         description: Successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User registered successfully"
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid OAuth credential"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while registering the user via OAuth"
+ */
+// Route to handle Google OAuth login/register
+router.post('/oauth-register', registerOAuthHandler);
+
+/**
+ * @swagger
+ * /auth/oauth-login:
+ *   post:
+ *     summary: Login a user via OAuth Google
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               crednitail:
+ *                 type: string
+ *                 example: 
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *         content:
+*           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login successful"
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid OAuth crednitail"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while logging in the user via OAuth"
+ */
+
+router.post('/oauth-login', loginOAuthHandler)
 
 
 export default router;
