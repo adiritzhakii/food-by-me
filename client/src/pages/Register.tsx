@@ -12,7 +12,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [serverRegister, {error: errorFromServer, isError, isSuccess}] = usePostAuthRegisterMutation();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!email || !password || !confirmPassword) {
       setError('Please fill in all fields.')
@@ -24,7 +24,7 @@ const Register = () => {
     }
 
     // Handle registration logic here
-    serverRegister({user: {email, password}})
+    await serverRegister({user: {email, password}})
 
   }
   useEffect(() => {
@@ -34,8 +34,13 @@ const Register = () => {
     }},[isSuccess]);
     
   useEffect(() => {
-    if(isError){
-      console.error("Registration failed: ", errorFromServer);
+    if(isError && errorFromServer){
+      if ('data' in errorFromServer) {
+        console.error("Registration failed: ", errorFromServer.data);
+        setError(errorFromServer.data as string);
+      } else {
+        console.error("Registration failed: ", errorFromServer);
+      }
     }
   },[isError,errorFromServer])
 
@@ -50,12 +55,6 @@ const Register = () => {
         <Typography variant="h5" component="h1" sx={{ marginTop: 2, marginBottom: 2 }}>
           Register
         </Typography>
-
-        {error && (
-          <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
-            {error}
-          </Typography>
-        )}
 
         <OauthGoogle />
 
@@ -111,6 +110,13 @@ const Register = () => {
               ),
             }}
           />
+
+          {error && (
+          <Typography variant="body1" color="error" sx={{ marginBottom: 2 }}>
+            {error}
+          </Typography>
+          )}
+
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3 }}>
             Register
           </Button>
