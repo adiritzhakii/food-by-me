@@ -3,6 +3,8 @@ import userModel, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
+import {verifyGoogleToken} from '../utils/verifyGoogleToken'
+import UserOauthModel, { IOauthUser } from '../models/oauth_user_model';
 
 const register = async (req: Request, res: Response) => {
     try {
@@ -13,12 +15,12 @@ const register = async (req: Request, res: Response) => {
             password: hashedPassword
         });
         res.status(200).send(user);
-    } catch (err) {
+    } catch (err: any) {
         res.status(400).send("wrong email or password");
     }
 };
 
-const generateTokens = (user: IUser): { accessToken: string, refreshToken: string } | null => {
+const generateTokens = (user: IUser | IOauthUser): { accessToken: string, refreshToken: string } | null => {
     if (!process.env.TOKEN_SECRET) {
         return null;
     }
@@ -189,9 +191,84 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     });
 };
 
+export const registerOAuthHandler = async (req: Request, res: Response) => {
+    const { credential } = req.body;
+    try {
+      // Verify the Google token
+      const { email, name, googleId, avatar } = await verifyGoogleToken(credential);
+      // Check if the user already exists
+      let user = await UserOauthModel.findOne({ googleId });
+  
+      if (!user) {
+        // If the user doesn't exist, create a new one
+        user = new UserOauthModel({ email, name, googleId, avatar });
+        await user.save();
+        res.status(200).json({message: 'User registerd Successfully'});
+      } else {
+        console.log('registerOAuthHandler: Server internal error - User already registerd with that email');
+        res.status(500).json({error: 'User already registerd with that email'});
+      }
+    } catch (error) {
+      console.error('Google OAuth failed:', error);
+      res.status(400).json({ error: 'Google OAuth failed' });
+    }
+  };
+
+  export const loginOAuthHandler = async (req: Request, res: Response) => {
+    const { credential } = req.body;
+    try {
+      // Verify the Google token
+      const { googleId } = await verifyGoogleToken(credential);
+      // Check if the user already exists
+      let user = await UserOauthModel.findOne({ googleId });
+  
+      if (!user) {
+        // If the user doesn't exist return error
+        res.status(400).json({message: 'User is not registerd'});
+      } else {
+        // if user, generate tokens
+        const tokens = generateTokens(user)
+        if (!tokens){
+            res.status(400).send('Access Denied in OAuth')
+            return;
+        }
+        user.save();
+        res.status(200).json(
+            {
+                user: user,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                _id: user._id
+            });
+      }
+
+    } catch (error) {
+      console.error('Google OAuth failed:', error);
+      res.status(400).json({ error: 'Google OAuth failed' });
+    }
+  };
+  export const getProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    try{
+        const user = await userModel.findById(userId);
+        if (user === null) {
+            res.status(404).send("Profile not found");
+            return;
+          } else {
+            res.status(200).json({...user});
+          }
+    } catch (error) {
+        res.status(400).send(error);
+    }
+
+  }
+
 export default {
     register,
     login,
     logout,
-    refresh
+    refresh,
+    registerOAuthHandler,
+    loginOAuthHandler,
+    getProfile
 };

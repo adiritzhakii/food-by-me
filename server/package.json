@@ -8,13 +8,16 @@
     "start": "cp .env_dev .env && tsc && node ./dist/src/app.js",
     "test": "cp .env_test .env && jest --detectOpenHandles --forceExit --runInBand",
     "testAuth": "cp .env_test .env && jest --detectOpenHandles --forceExit auth.test.ts",
-    "testPosts": "cp .env_test .env && jest --detectOpenHandles --forceExit posts.test.ts"
+    "testPosts": "cp .env_test .env && jest --detectOpenHandles --forceExit posts.test.ts",
+    "generate-swagger": "ts-node src/generate-swagger.ts"
   },
   "author": "Adir Itzhaki & Eylon Fayena",
   "license": "ISC",
   "dependencies": {
+    "@googleapis/oauth2": "^1.0.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
@@ -24,6 +27,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",
