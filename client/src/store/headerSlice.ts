@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getCookieData } from '../utils/cookie';
 
-export type tabType = 'addPost' | 'home' | 'profile' | 'addAIPost';
+export type tabType = 'newPost' | 'home' | 'profile' | 'AIPost';
 interface HeaderState {
     activeTab: tabType;
   }

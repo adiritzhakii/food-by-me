@@ -50,9 +50,9 @@ const Header = () => {
         {/* Add New Post Button */}
         <IconButton
           aria-label="add new post"
-          onClick={() => handleTabClick('addPost')}
+          onClick={() => handleTabClick('newPost')}
         >
-        {activeTab === 'addPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
+        {activeTab === 'newPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
           <Typography variant="caption" style={{marginLeft: 4 }}>
             New Post
           </Typography>
@@ -61,9 +61,9 @@ const Header = () => {
         {/* AI New Post Button */}
         <IconButton
           aria-label="add AI post"
-          onClick={() => handleTabClick('addAIPost')}
+          onClick={() => handleTabClick('AIPost')}
         >
-        {activeTab === 'addAIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
+        {activeTab === 'AIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
 
           <Typography variant="caption" style={{marginLeft: 4 }}>
             AI Post

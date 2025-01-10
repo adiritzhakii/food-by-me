@@ -43,11 +43,11 @@ function OauthGoogle({route}: oauthGoogleProps) {
           body: JSON.stringify({ credential: credentialResponse.credential }),
         });
         const data = await res.json()
+        navigate('/login')
       } catch (error) {
         console.log(error)
       }
     }    
-
   };
 
   const handleError = () => {
