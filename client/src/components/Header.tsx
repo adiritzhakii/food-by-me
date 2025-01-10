@@ -12,16 +12,19 @@ import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { setActiveTab, tabType } from '../store/headerSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Header = () => {
   const theme = useTheme();
   const { activeTab } = useSelector((state:RootState) => state.header);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const iconColor = theme.palette.primary.main;
   
   const handleTabClick = (tab: tabType) => {
     dispatch(setActiveTab(tab))
+    navigate(`/${tab}`);
   };
 
   return (

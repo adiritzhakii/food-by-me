@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import Header from './components/Header';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
+import Profile from './pages/Profile';
 
 function App() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -23,7 +24,9 @@ function App() {
 
             {/* private routes */}
             <Route path="/home" element={isAuthenticated? <HomePage />: <Navigate to='/login'/>} />
-            
+            <Route path="/profile" element={isAuthenticated? <Profile />: <Navigate to='/login'/>} />
+            <Route path="/addPost" element={isAuthenticated? <Profile />: <Navigate to='/login'/>} />
+            <Route path="/addAIPost" element={isAuthenticated? <Profile />: <Navigate to='/login'/>} />
           </Routes>
         </div>
     </>
