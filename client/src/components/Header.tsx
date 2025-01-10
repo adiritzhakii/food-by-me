@@ -9,15 +9,19 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import PersonIcon from '@mui/icons-material/Person';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import { useTheme } from '@mui/material/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { setActiveTab, tabType } from '../store/headerSlice';
 
 
 const Header = () => {
   const theme = useTheme();
+  const { activeTab } = useSelector((state:RootState) => state.header);
+  const dispatch = useDispatch();
   const iconColor = theme.palette.primary.main;
-  const [activeTab, setActiveTab] = useState('home');
   
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
+  const handleTabClick = (tab: tabType) => {
+    dispatch(setActiveTab(tab))
   };
 
   return (

@@ -3,13 +3,18 @@ import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornm
 import { Link, useNavigate } from 'react-router-dom'
 import {usePostAuthLoginMutation} from '../store/serverApi';
 import OauthGoogle from '../components/OauthGoogle'
+import { setCookie } from '../utils/cookie';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
+import { login } from '../store/authSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate();
-  const [ serverLogin, {isError, isSuccess, error: serverError} ] = usePostAuthLoginMutation();
+  const [ serverLogin, {isError, isSuccess, error: serverError, data} ] = usePostAuthLoginMutation();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -24,7 +29,13 @@ const Login = () => {
   useEffect(() => {
     if(isSuccess){
       alert('Logged in successfully!');
-      navigate('/')
+      if(data?.accessToken){
+        setCookie({provider: "Local",token: data.accessToken}, 'user');
+        dispatch(login({token: data.accessToken}));
+        navigate('/home')
+      }else {
+        console.log("Timing error")
+      }
     }},[isSuccess, navigate]);
     
   useEffect(() => {

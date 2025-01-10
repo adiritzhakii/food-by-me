@@ -1,16 +1,21 @@
 
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { useNavigate } from 'react-router';
+import { setCookie } from '../utils/cookie';
+import { useDispatch, UseDispatch } from 'react-redux';
+import { login } from '../store/authSlice';
 
 interface oauthGoogleProps {
   route: 'login' | 'register';
 }
 
-const Cid = '';
+const Cid = '42798047072-2992si37nemq8m9io7ogb0ad92op8kli.apps.googleusercontent.com';
 
 function OauthGoogle({route}: oauthGoogleProps) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
-    console.log("Credential Response:", credentialResponse);
     // Send the token to your backend server for verification
     if (route === 'login') {
       // Send the token to the login route
@@ -21,7 +26,10 @@ function OauthGoogle({route}: oauthGoogleProps) {
             body: JSON.stringify({ credential: credentialResponse.credential }),
           });
           const data = await res.json()
-          console.log(data)
+          setCookie({provider: "Google",token: data.accessToken}, 'user');
+          dispatch(login({token: data.accessToken}));
+          navigate('/home')
+          
         } catch (error) {
           console.log(error)
         }
@@ -35,7 +43,6 @@ function OauthGoogle({route}: oauthGoogleProps) {
           body: JSON.stringify({ credential: credentialResponse.credential }),
         });
         const data = await res.json()
-        console.log(data)
       } catch (error) {
         console.log(error)
       }

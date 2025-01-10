@@ -247,6 +247,21 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
       res.status(400).json({ error: 'Google OAuth failed' });
     }
   };
+  export const getProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    try{
+        const user = await userModel.findById(userId);
+        if (user === null) {
+            res.status(404).send("Profile not found");
+            return;
+          } else {
+            res.status(200).json({...user});
+          }
+    } catch (error) {
+        res.status(400).send(error);
+    }
+
+  }
 
 export default {
     register,
@@ -254,5 +269,6 @@ export default {
     logout,
     refresh,
     registerOAuthHandler,
-    loginOAuthHandler
+    loginOAuthHandler,
+    getProfile
 };

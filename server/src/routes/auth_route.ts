@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import authController, { loginOAuthHandler, registerOAuthHandler } from "../controllers/auth_controller";
+import authController, { authMiddleware, getProfile, loginOAuthHandler, registerOAuthHandler } from "../controllers/auth_controller";
 
 
 /**
@@ -279,6 +279,57 @@ router.post('/oauth-register', registerOAuthHandler);
  */
 
 router.post('/oauth-login', loginOAuthHandler)
+
+/**
+ * @swagger
+ * /auth/oauth-login:
+ *   get:
+ *     summary: Get profile
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               crednitail:
+ *                 type: string
+ *                 example: 
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *         content:
+*           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login successful"
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid OAuth crednitail"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while logging in the user via OAuth"
+ */
+router.get('profile', authMiddleware, getProfile);
 
 
 export default router;
