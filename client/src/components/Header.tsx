@@ -12,16 +12,19 @@ import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { setActiveTab, tabType } from '../store/headerSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Header = () => {
   const theme = useTheme();
   const { activeTab } = useSelector((state:RootState) => state.header);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const iconColor = theme.palette.primary.main;
   
   const handleTabClick = (tab: tabType) => {
     dispatch(setActiveTab(tab))
+    navigate(`/${tab}`);
   };
 
   return (
@@ -47,9 +50,9 @@ const Header = () => {
         {/* Add New Post Button */}
         <IconButton
           aria-label="add new post"
-          onClick={() => handleTabClick('addPost')}
+          onClick={() => handleTabClick('newPost')}
         >
-        {activeTab === 'addPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
+        {activeTab === 'newPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
           <Typography variant="caption" style={{marginLeft: 4 }}>
             New Post
           </Typography>
@@ -58,9 +61,9 @@ const Header = () => {
         {/* AI New Post Button */}
         <IconButton
           aria-label="add AI post"
-          onClick={() => handleTabClick('addAIPost')}
+          onClick={() => handleTabClick('AIPost')}
         >
-        {activeTab === 'addAIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
+        {activeTab === 'AIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
 
           <Typography variant="caption" style={{marginLeft: 4 }}>
             AI Post
