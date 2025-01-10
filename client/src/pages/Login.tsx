@@ -11,14 +11,14 @@ const Login = () => {
   const navigate = useNavigate();
   const [ serverLogin, {isError, isSuccess, error: serverError} ] = usePostAuthLoginMutation();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!email || !password) {
       setError('Please fill in both fields.')
       return
     }
     // Handle login logic here
-    serverLogin({user: {email, password}})
+    await serverLogin({user: {email, password}})
   }
   
   useEffect(() => {
@@ -29,7 +29,12 @@ const Login = () => {
     
   useEffect(() => {
     if(isError){
-      console.error("Registration failed: ", serverError); // TODO: why serverError is null
+      if ('data' in serverError) {
+        console.error("Login failed: ", serverError.data);
+        setError(serverError.data as string);
+      } else {
+        console.error("Login failed: ", serverError);
+      }
     }
   },[isError,serverError])
 
@@ -43,13 +48,7 @@ const Login = () => {
           Sign In
         </Typography>
 
-        {error && (
-          <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
-            {error}
-          </Typography>
-        )}
-
-        <OauthGoogle />
+        <OauthGoogle route='login' />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -86,6 +85,13 @@ const Login = () => {
               ),
             }}
           />
+
+          {error && (
+          <Typography variant="body1" color="error" sx={{ marginBottom: 2 }}>
+            {error}
+          </Typography>
+          )}
+
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3 }}>
             Sign In
           </Button>
