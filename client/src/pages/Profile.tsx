@@ -3,6 +3,9 @@ import { Avatar, Box, Button, TextField, Typography, IconButton } from '@mui/mat
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Posts from '../components/Posts';
+import { deleteCookieData } from '../utils/cookie';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/authSlice';
 
 interface UserProfile {
   email: string;
@@ -15,7 +18,7 @@ const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch()
   useEffect(() => {
     // Fetch user details (mocked for example purposes)
     const fetchUser = async () => {
@@ -32,8 +35,8 @@ const Profile: React.FC = () => {
   }, []);
 
   const handleLogout = () => {
-    // Mock logout function - redirecting to login page
-    console.log('User logged out');
+    deleteCookieData('user')
+    dispatch(logout())
     navigate('/login'); // Replace '/login' with your login route
   };
 

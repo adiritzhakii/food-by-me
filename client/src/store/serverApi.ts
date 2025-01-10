@@ -41,6 +41,32 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    postAuthOauthRegister: build.mutation<
+      PostAuthOauthRegisterApiResponse,
+      PostAuthOauthRegisterApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/oauth-register`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
+    postAuthOauthLogin: build.mutation<
+      PostAuthOauthLoginApiResponse,
+      PostAuthOauthLoginApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/oauth-login`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
+    getAuthOauthLogin: build.query<
+      GetAuthOauthLoginApiResponse,
+      GetAuthOauthLoginApiArg
+    >({
+      query: (queryArg) => ({ url: `/auth/oauth-login`, body: queryArg.body }),
+    }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
     }),
@@ -117,6 +143,33 @@ export type PostAuthRefreshApiArg = {
     refreshToken?: string;
   };
 };
+export type PostAuthOauthRegisterApiResponse =
+  /** status 200 Successfully registered */ {
+    message?: string;
+  };
+export type PostAuthOauthRegisterApiArg = {
+  body: {
+    credential?: string;
+  };
+};
+export type PostAuthOauthLoginApiResponse =
+  /** status 200 Successfully logged in */ {
+    message?: string;
+  };
+export type PostAuthOauthLoginApiArg = {
+  body: {
+    crednitail?: string;
+  };
+};
+export type GetAuthOauthLoginApiResponse =
+  /** status 200 Successfully logged in */ {
+    message?: string;
+  };
+export type GetAuthOauthLoginApiArg = {
+  body: {
+    crednitail?: string;
+  };
+};
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -171,6 +224,9 @@ export const {
   usePostAuthLoginMutation,
   usePostAuthLogoutMutation,
   usePostAuthRefreshMutation,
+  usePostAuthOauthRegisterMutation,
+  usePostAuthOauthLoginMutation,
+  useGetAuthOauthLoginQuery,
   useGetCommentsQuery,
   usePostCommentsMutation,
   useGetCommentsByIdQuery,
