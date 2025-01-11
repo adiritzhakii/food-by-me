@@ -88,8 +88,16 @@ type UserDocument = Document<unknown, {}, IUser> & IUser & Required<{
     __v: number;
 }
 
-const verifyAccessToken = (refreshToken: string | undefined) => {
-    return new Promise<UserDocument>((resolve, reject) => {
+type OUserDocument = Document<unknown, {}, IOauthUser> & IOauthUser & Required<{
+    _id: string;
+}> & {
+    __v: number;
+}
+
+type providerSchema = "Google" | "Local";
+
+const verifyAccessToken = (refreshToken: string | undefined, provider: providerSchema | undefined) => {
+    return new Promise<UserDocument | OUserDocument>((resolve, reject) => {
         if (!refreshToken) {
             reject("Access Denied");
             return;
@@ -105,8 +113,14 @@ const verifyAccessToken = (refreshToken: string | undefined) => {
             }
             const userId = payload._id;
             try {
-                const user = await userModel.findById(userId);
+                let user;
+                if (provider === "Google"){
+                    user = await UserOauthModel.findById(userId)
+                }else{
+                    user = await userModel.findById(userId);
+                }
                 if (!user) {
+                    console.log("qwer")
                     reject("Access Denied");
                     return;
                 }
@@ -129,7 +143,7 @@ const verifyAccessToken = (refreshToken: string | undefined) => {
 
 const logout = async (req: Request, res: Response) => {
     try {
-        const user = await verifyAccessToken(req.body.refreshToken);
+        const user = await verifyAccessToken(req.body.refreshToken, req.body.provider);
 
         await user.save();
 
@@ -143,7 +157,7 @@ const logout = async (req: Request, res: Response) => {
 
 const refresh = async (req: Request, res: Response) => {
     try {
-        const user = await verifyAccessToken(req.body.refreshToken);
+        const user = await verifyAccessToken(req.body.refreshToken, req.body.provider);
 
         //generate new tokens
         const tokens = generateTokens(user);

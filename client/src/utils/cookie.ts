@@ -5,6 +5,7 @@ type CookieSchema = userCookieSchema
 interface userCookieSchema {
     provider: "Local" | "Google";
     token: string;
+    refreshToken: string;
 }
 
 export const setCookie = (cookieData: CookieSchema, key: string) => {

@@ -4,8 +4,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Posts from '../components/Posts';
 import { deleteCookieData } from '../utils/cookie';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
+import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery } from '../store/serverApi'
+import { RootState } from '../store/store';
 
 interface UserProfile {
   email: string;
@@ -17,6 +19,8 @@ const Profile: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UserProfile | null>(null);
+  const [serverLogout] = usePostAuthLogoutMutation();
+  const { refreshToken, provider } = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate();
   const dispatch = useDispatch()
   useEffect(() => {
@@ -34,10 +38,11 @@ const Profile: React.FC = () => {
     fetchUser();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     deleteCookieData('user')
+    await serverLogout({body: {refreshToken, provider}})
     dispatch(logout())
-    navigate('/login'); // Replace '/login' with your login route
+    navigate('/login');
   };
 
   const handleEditClick = () => {

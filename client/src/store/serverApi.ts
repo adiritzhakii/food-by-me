@@ -61,11 +61,11 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
-    getAuthOauthLogin: build.query<
-      GetAuthOauthLoginApiResponse,
-      GetAuthOauthLoginApiArg
+    getAuthGetProfile: build.query<
+      GetAuthGetProfileApiResponse,
+      GetAuthGetProfileApiArg
     >({
-      query: (queryArg) => ({ url: `/auth/oauth-login`, body: queryArg.body }),
+      query: () => ({ url: `/auth/getProfile` }),
     }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
@@ -131,6 +131,7 @@ export type PostAuthLogoutApiResponse = unknown;
 export type PostAuthLogoutApiArg = {
   body: {
     refreshToken?: string;
+    provider?: string;
   };
 };
 export type PostAuthRefreshApiResponse =
@@ -161,15 +162,9 @@ export type PostAuthOauthLoginApiArg = {
     crednitail?: string;
   };
 };
-export type GetAuthOauthLoginApiResponse =
-  /** status 200 Successfully logged in */ {
-    message?: string;
-  };
-export type GetAuthOauthLoginApiArg = {
-  body: {
-    crednitail?: string;
-  };
-};
+export type GetAuthGetProfileApiResponse =
+  /** status 200 Successfully logged in */ UserDb;
+export type GetAuthGetProfileApiArg = void;
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -211,6 +206,14 @@ export type User = {
   /** The user password */
   password: string;
 };
+export type UserDb = {
+  /** The user email */
+  email: string;
+  /** The user password */
+  password: string;
+  /** List of refershTokens */
+  refreshToken?: string[];
+};
 export type Comment = {
   postId?: string;
   comment?: string;
@@ -226,7 +229,7 @@ export const {
   usePostAuthRefreshMutation,
   usePostAuthOauthRegisterMutation,
   usePostAuthOauthLoginMutation,
-  useGetAuthOauthLoginQuery,
+  useGetAuthGetProfileQuery,
   useGetCommentsQuery,
   usePostCommentsMutation,
   useGetCommentsByIdQuery,
