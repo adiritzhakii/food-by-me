@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-server-api": "npx @rtk-query/codegen-openapi openapi-config.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

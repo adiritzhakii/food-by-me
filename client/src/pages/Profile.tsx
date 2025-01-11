@@ -3,6 +3,11 @@ import { Avatar, Box, Button, TextField, Typography, IconButton } from '@mui/mat
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Posts from '../components/Posts';
+import { deleteCookieData } from '../utils/cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../store/authSlice';
+import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery } from '../store/serverApi'
+import { RootState } from '../store/store';
 
 interface UserProfile {
   email: string;
@@ -14,8 +19,10 @@ const Profile: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UserProfile | null>(null);
+  const [serverLogout] = usePostAuthLogoutMutation();
+  const { refreshToken, provider } = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate();
-
+  const dispatch = useDispatch()
   useEffect(() => {
     // Fetch user details (mocked for example purposes)
     const fetchUser = async () => {
@@ -31,10 +38,11 @@ const Profile: React.FC = () => {
     fetchUser();
   }, []);
 
-  const handleLogout = () => {
-    // Mock logout function - redirecting to login page
-    console.log('User logged out');
-    navigate('/login'); // Replace '/login' with your login route
+  const handleLogout = async () => {
+    deleteCookieData('user')
+    await serverLogout({body: {refreshToken, provider}})
+    dispatch(logout())
+    navigate('/login');
   };
 
   const handleEditClick = () => {

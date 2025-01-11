@@ -13,7 +13,8 @@ import AIPost from './components/AIPost';
 function App() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
   const location = useLocation();
-  const showHeader = location.pathname !== '/login' && location.pathname !== '/register';
+  const showHeader = location.pathname !== '/login' &&
+                     location.pathname !== '/register' && location.pathname !== '/';
 
   return (
     <>
@@ -25,10 +26,11 @@ function App() {
             <Route path="/register" element={!isAuthenticated ? <Register />: <Navigate to='/home'/>} />
 
             {/* private routes */}
-            <Route path="/home" element={isAuthenticated? <HomePage />: <Navigate to='/login'/>} />
-            <Route path="/profile" element={isAuthenticated? <Profile />: <Navigate to='/login'/>} />
-            <Route path="/addPost" element={isAuthenticated? <NewPost />: <Navigate to='/login'/>} />
-            <Route path="/addAIPost" element={isAuthenticated? <AIPost />: <Navigate to='/login'/>} />
+            <Route path="/" element={isAuthenticated? <Navigate to='/home'/> : <Navigate to='/login'/>} />
+            <Route path="/home" element={isAuthenticated? <HomePage /> : <Navigate to='/login'/>} />
+            <Route path="/profile" element={isAuthenticated? <Profile /> : <Navigate to='/login'/>} />
+            <Route path="/addPost" element={isAuthenticated? <NewPost /> : <Navigate to='/login'/>} />
+            <Route path="/addAIPost" element={isAuthenticated? <AIPost /> : <Navigate to='/login'/>} />
           </Routes>
         </div>
     </>

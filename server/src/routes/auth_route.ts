@@ -39,6 +39,27 @@ import authController, { authMiddleware, getProfile, loginOAuthHandler, register
 *       example:
 *         email: 'alice@gmail.com'
 *         password: '123456'
+*     UserDB:
+*       type: object
+*       required:
+*         - email
+*         - password
+*       properties:
+*         email:
+*           type: string
+*           description: The user email
+*         password:
+*           type: string
+*           description: The user password
+*         refreshToken:
+*           type: array
+*           items:
+*             type: string
+*           description: List of refershTokens
+*       example:
+*         email: 'alice@gmail.com'
+*         password: '123456'
+*         refershToken: ["asd", "qwer"]
 */
 
 /**
@@ -122,6 +143,9 @@ router.post("/login", authController.login);
  *               refreshToken:
  *                 type: string
  *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               provider:
+ *                 type: string
+ *                 example: Local
  *     responses:
  *       '200':
  *         description: Successful logout
@@ -282,33 +306,21 @@ router.post('/oauth-login', loginOAuthHandler)
 
 /**
  * @swagger
- * /auth/oauth-login:
+ * /auth/getProfile:
  *   get:
  *     summary: Get profile
  *     tags:
  *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               crednitail:
- *                 type: string
- *                 example: 
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully logged in
  *         content:
 *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Login successful"
- *       400:
+ *               $ref: '#/components/schemas/UserDB'
+ *       404:
  *         description: Bad request
  *         content:
  *           application/json:
@@ -317,8 +329,8 @@ router.post('/oauth-login', loginOAuthHandler)
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Invalid OAuth crednitail"
- *       500:
+ *                   example: "Profile not found"
+ *       401:
  *         description: Internal server error
  *         content:
  *           application/json:
@@ -327,7 +339,7 @@ router.post('/oauth-login', loginOAuthHandler)
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "An error occurred while logging in the user via OAuth"
+ *                   example: "Access denied"
  */
 router.get('profile', authMiddleware, getProfile);
 

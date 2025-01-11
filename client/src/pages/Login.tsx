@@ -29,9 +29,9 @@ const Login = () => {
   useEffect(() => {
     if(isSuccess){
       alert('Logged in successfully!');
-      if(data?.accessToken){
-        setCookie({provider: "Local",token: data.accessToken}, 'user');
-        dispatch(login({token: data.accessToken}));
+      if(data?.accessToken && data?.refreshToken){
+        setCookie({provider: "Local",token: data.accessToken, refreshToken: data.refreshToken}, 'user');
+        dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Local"}));
         navigate('/home')
       }else {
         console.log("Timing error")

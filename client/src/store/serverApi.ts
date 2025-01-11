@@ -41,6 +41,32 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    postAuthOauthRegister: build.mutation<
+      PostAuthOauthRegisterApiResponse,
+      PostAuthOauthRegisterApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/oauth-register`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
+    postAuthOauthLogin: build.mutation<
+      PostAuthOauthLoginApiResponse,
+      PostAuthOauthLoginApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/oauth-login`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
+    getAuthGetProfile: build.query<
+      GetAuthGetProfileApiResponse,
+      GetAuthGetProfileApiArg
+    >({
+      query: () => ({ url: `/auth/getProfile` }),
+    }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
     }),
@@ -105,6 +131,7 @@ export type PostAuthLogoutApiResponse = unknown;
 export type PostAuthLogoutApiArg = {
   body: {
     refreshToken?: string;
+    provider?: string;
   };
 };
 export type PostAuthRefreshApiResponse =
@@ -117,6 +144,27 @@ export type PostAuthRefreshApiArg = {
     refreshToken?: string;
   };
 };
+export type PostAuthOauthRegisterApiResponse =
+  /** status 200 Successfully registered */ {
+    message?: string;
+  };
+export type PostAuthOauthRegisterApiArg = {
+  body: {
+    credential?: string;
+  };
+};
+export type PostAuthOauthLoginApiResponse =
+  /** status 200 Successfully logged in */ {
+    message?: string;
+  };
+export type PostAuthOauthLoginApiArg = {
+  body: {
+    crednitail?: string;
+  };
+};
+export type GetAuthGetProfileApiResponse =
+  /** status 200 Successfully logged in */ UserDb;
+export type GetAuthGetProfileApiArg = void;
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -158,6 +206,14 @@ export type User = {
   /** The user password */
   password: string;
 };
+export type UserDb = {
+  /** The user email */
+  email: string;
+  /** The user password */
+  password: string;
+  /** List of refershTokens */
+  refreshToken?: string[];
+};
 export type Comment = {
   postId?: string;
   comment?: string;
@@ -171,6 +227,9 @@ export const {
   usePostAuthLoginMutation,
   usePostAuthLogoutMutation,
   usePostAuthRefreshMutation,
+  usePostAuthOauthRegisterMutation,
+  usePostAuthOauthLoginMutation,
+  useGetAuthGetProfileQuery,
   useGetCommentsQuery,
   usePostCommentsMutation,
   useGetCommentsByIdQuery,
