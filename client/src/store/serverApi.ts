@@ -124,7 +124,12 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getPosts: build.query<GetPostsApiResponse, GetPostsApiArg>({
-      query: () => ({ url: `/posts` }),
+      query: (queryArg) => ({
+        url: `/posts`,
+        params: {
+          owner: queryArg.owner,
+        },
+      }),
     }),
     postPosts: build.mutation<PostPostsApiResponse, PostPostsApiArg>({
       query: (queryArg) => ({
@@ -244,7 +249,9 @@ export type DeleteCommentsByIdApiArg = {
   id: string;
 };
 export type GetPostsApiResponse = /** status 200 A list of posts */ Post[];
-export type GetPostsApiArg = void;
+export type GetPostsApiArg = {
+  owner?: any;
+};
 export type PostPostsApiResponse = /** status 201 The created post */ Post;
 export type PostPostsApiArg = {
   post: Post;

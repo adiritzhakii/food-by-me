@@ -693,6 +693,15 @@
         "tags": [
           "Posts"
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "owner",
+            "type": "string",
+            "required": false,
+            "example": "Local"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A list of posts",
