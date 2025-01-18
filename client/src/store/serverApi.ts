@@ -65,7 +65,12 @@ const injectedRtkApi = api.injectEndpoints({
       GetAuthGetProfileApiResponse,
       GetAuthGetProfileApiArg
     >({
-      query: () => ({ url: `/auth/getProfile` }),
+      query: (queryArg) => ({
+        url: `/auth/getProfile`,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
     }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
@@ -163,8 +168,10 @@ export type PostAuthOauthLoginApiArg = {
   };
 };
 export type GetAuthGetProfileApiResponse =
-  /** status 200 Successfully logged in */ UserDb;
-export type GetAuthGetProfileApiArg = void;
+  /** status 200 Successfully retrieved profile */ UserDb;
+export type GetAuthGetProfileApiArg = {
+  provider: ProviderSchema;
+};
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -215,9 +222,10 @@ export type UserDb = {
   email: string;
   /** The user picture, can be url or path in server */
   avatar: string;
-  /** List of refershTokens */
+  /** List of refreshTokens */
   refreshToken: string[];
 };
+export type ProviderSchema = "Local" | "Google";
 export type Comment = {
   postId?: string;
   comment?: string;

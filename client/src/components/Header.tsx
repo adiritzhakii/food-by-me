@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Badge, TextField } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import AssistantIcon from '@mui/icons-material/Assistant';
 import AssistantOutlinedIcon from '@mui/icons-material/AssistantOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -14,17 +13,28 @@ import { RootState } from '../store/store';
 import { setActiveTab, tabType } from '../store/headerSlice';
 import { useNavigate } from 'react-router-dom';
 
-
-const Header = () => {
+const Header = ({
+  onNewPostClick,
+  onAIPostClick,
+}: {
+  onNewPostClick: () => void;
+  onAIPostClick: () => void;
+}) => {
   const theme = useTheme();
-  const { activeTab } = useSelector((state:RootState) => state.header);
+  const { activeTab } = useSelector((state: RootState) => state.header);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const iconColor = theme.palette.primary.main;
-  
+
   const handleTabClick = (tab: tabType) => {
-    dispatch(setActiveTab(tab))
-    navigate(`/${tab}`);
+    dispatch(setActiveTab(tab));
+    if (tab === 'newPost') {
+      onNewPostClick(); // Trigger the New Post Modal
+    } else if (tab === 'AIPost') {
+      onAIPostClick(); // Trigger the AI Post Modal
+    } else {
+      navigate(`/${tab}`);
+    }
   };
 
   return (
@@ -42,7 +52,7 @@ const Header = () => {
           onClick={() => handleTabClick('home')}
         >
           {activeTab === 'home' ? <HomeIcon style={{ color: iconColor }} /> : <HomeOutlinedIcon style={{ color: iconColor }} />}
-          <Typography variant="caption" style={{marginLeft: 4 }}>
+          <Typography variant="caption" style={{ marginLeft: 4 }}>
             Home
           </Typography>
         </IconButton>
@@ -52,8 +62,8 @@ const Header = () => {
           aria-label="add new post"
           onClick={() => handleTabClick('newPost')}
         >
-        {activeTab === 'newPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
-          <Typography variant="caption" style={{marginLeft: 4 }}>
+          {activeTab === 'newPost' ? <AddCircleRoundedIcon style={{ color: iconColor }} /> : <AddCircleOutlineRoundedIcon style={{ color: iconColor }} />}
+          <Typography variant="caption" style={{ marginLeft: 4 }}>
             New Post
           </Typography>
         </IconButton>
@@ -63,9 +73,8 @@ const Header = () => {
           aria-label="add AI post"
           onClick={() => handleTabClick('AIPost')}
         >
-        {activeTab === 'AIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
-
-          <Typography variant="caption" style={{marginLeft: 4 }}>
+          {activeTab === 'AIPost' ? <AssistantIcon style={{ color: iconColor }} /> : <AssistantOutlinedIcon style={{ color: iconColor }} />}
+          <Typography variant="caption" style={{ marginLeft: 4 }}>
             AI Post
           </Typography>
         </IconButton>
@@ -76,8 +85,8 @@ const Header = () => {
           aria-label="profile"
           onClick={() => handleTabClick('profile')}
         >
-        {activeTab === 'profile' ? <PersonIcon style={{ color: iconColor }} /> : <PersonOutlinedIcon style={{ color: iconColor }} />}
-          <Typography variant="caption" style={{marginLeft: 4 }}>
+          {activeTab === 'profile' ? <PersonIcon style={{ color: iconColor }} /> : <PersonOutlinedIcon style={{ color: iconColor }} />}
+          <Typography variant="caption" style={{ marginLeft: 4 }}>
             Profile
           </Typography>
         </IconButton>

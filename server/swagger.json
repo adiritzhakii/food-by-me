@@ -350,9 +350,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "provider",
+            "schema": {
+              "$ref": "#/components/schemas/providerSchema"
+            },
+            "required": true,
+            "example": "Local"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Successfully logged in",
+            "description": "Successfully retrieved profile",
             "content": {
               "application/json": {
                 "schema": {
@@ -362,36 +373,10 @@
             }
           },
           "401": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Access denied"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Unauthorized"
           },
-          "404": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Profile not found"
-                    }
-                  }
-                }
-              }
-            }
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -727,18 +712,26 @@
             "items": {
               "type": "string"
             },
-            "description": "List of refershTokens"
+            "description": "List of refreshTokens"
           }
         },
         "example": {
           "name": "Alice",
           "email": "alice@gmail.com",
           "avatar": "https://www.google.com",
-          "refershToken": [
+          "refreshToken": [
             "asd",
             "qwer"
           ]
         }
+      },
+      "providerSchema": {
+        "type": "string",
+        "enum": [
+          "Local",
+          "Google"
+        ],
+        "description": "The provider schema"
       },
       "Comment": {
         "type": "object",
