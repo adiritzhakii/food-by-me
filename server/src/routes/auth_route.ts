@@ -46,23 +46,29 @@ import authController, { authMiddleware, getProfile, loginOAuthHandler, register
 *     UserDB:
 *       type: object
 *       required:
+*         - name
 *         - email
-*         - password
+*         - avatar
+*         - refreshToken
 *       properties:
+*         name:
+*           type: string
+*           description: The user name
 *         email:
 *           type: string
 *           description: The user email
-*         password:
-*           type: string
-*           description: The user password
+*         avatar:
+*          type: string
+*          description: The user picture, can be url or path in server
 *         refreshToken:
 *           type: array
 *           items:
 *             type: string
 *           description: List of refershTokens
 *       example:
+*         name: 'Alice'
 *         email: 'alice@gmail.com'
-*         password: '123456'
+*         avatar: 'https://www.google.com'
 *         refershToken: ["asd", "qwer"]
 */
 
@@ -345,7 +351,7 @@ router.post('/oauth-login', loginOAuthHandler)
  *                   type: string
  *                   example: "Access denied"
  */
-router.get('profile', authMiddleware, getProfile);
+router.get('/getProfile', authMiddleware, getProfile);
 
 
 export default router;

@@ -704,17 +704,23 @@
       "UserDB": {
         "type": "object",
         "required": [
+          "name",
           "email",
-          "password"
+          "avatar",
+          "refreshToken"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "The user name"
+          },
           "email": {
             "type": "string",
             "description": "The user email"
           },
-          "password": {
+          "avatar": {
             "type": "string",
-            "description": "The user password"
+            "description": "The user picture, can be url or path in server"
           },
           "refreshToken": {
             "type": "array",
@@ -725,8 +731,9 @@
           }
         },
         "example": {
+          "name": "Alice",
           "email": "alice@gmail.com",
-          "password": "123456",
+          "avatar": "https://www.google.com",
           "refershToken": [
             "asd",
             "qwer"

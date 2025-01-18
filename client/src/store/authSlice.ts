@@ -1,11 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getCookieData } from '../utils/cookie';
 
+interface UserProfile {
+  email: string;
+  name: string;
+  avatar: string;
+}
+
 interface AuthState {
     isAuthenticated: boolean;
     token: string | null;
     refreshToken: string | undefined;
     provider: string | undefined;
+    userData: UserProfile | undefined;
   }
 
 const userCookie = getCookieData('user');
@@ -15,6 +22,7 @@ const initialState: AuthState = {
     token: userCookie ? userCookie.token: null,
     refreshToken: userCookie ? userCookie.refreshToken : undefined,
     provider: userCookie ? userCookie.provider : undefined,
+    userData: undefined
 };
 
 const authSlice = createSlice({
@@ -33,8 +41,11 @@ const authSlice = createSlice({
       state.refreshToken = undefined;
       state.provider = undefined;
     },
-  },
+    setUserData: (state, action: PayloadAction<UserProfile>) => {
+      state.userData = action.payload;
+    },
+  }
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setUserData } = authSlice.actions;
 export default authSlice.reducer;

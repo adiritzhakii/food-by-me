@@ -209,12 +209,14 @@ export type User = {
   password: string;
 };
 export type UserDb = {
+  /** The user name */
+  name: string;
   /** The user email */
   email: string;
-  /** The user password */
-  password: string;
+  /** The user picture, can be url or path in server */
+  avatar: string;
   /** List of refershTokens */
-  refreshToken?: string[];
+  refreshToken: string[];
 };
 export type Comment = {
   postId?: string;

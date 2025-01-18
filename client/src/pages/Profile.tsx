@@ -5,38 +5,37 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Posts from '../components/Posts';
 import { deleteCookieData } from '../utils/cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../store/authSlice';
+import { logout, setUserData } from '../store/authSlice';
 import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery } from '../store/serverApi'
 import { RootState } from '../store/store';
 
 interface UserProfile {
   email: string;
-  name?: string;
-  avatar: string;
+  name: string;
+  avatar?: string;
 }
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const {userData} = useSelector((state: RootState) => state.auth);
+
   const [isEditing, setIsEditing] = useState(false);
-  const [updatedUser, setUpdatedUser] = useState<UserProfile | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<UserProfile>(userData ? userData : {email: '', name: '', avatar: ''});
   const [serverLogout] = usePostAuthLogoutMutation();
   const { refreshToken, provider } = useSelector((state: RootState) => state.auth)
+  
   const navigate = useNavigate();
+  
+  const {refetch, data} = useGetAuthGetProfileQuery();
   const dispatch = useDispatch()
-  useEffect(() => {
-    // Fetch user details (mocked for example purposes)
-    const fetchUser = async () => {
-      const mockUser: UserProfile = {
-        email: 'user@example.com',
-        name: 'John Doe',
-        avatar: 'https://via.placeholder.com/100',
-      };
-      setUser(mockUser);
-      setUpdatedUser(mockUser);
-    };
 
-    fetchUser();
-  }, []);
+  useEffect(() => {
+    if (data) {
+      dispatch(setUserData(data))
+      console.log('User data:', userData);
+    }
+  }
+  , [data])
+
 
   const handleLogout = async () => {
     deleteCookieData('user')
@@ -50,7 +49,9 @@ const Profile: React.FC = () => {
   };
 
   const handleSaveClick = () => {
-    setUser(updatedUser);
+    
+
+
     setIsEditing(false);
     console.log('User updated:', updatedUser);
   };
@@ -74,7 +75,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (!user) return <Typography sx={{ color: 'white' }}>Loading...</Typography>;
+  if (!userData) return <Typography sx={{ color: 'white' }}>Loading...</Typography>;
 
   return (
     <Box sx={{ padding: 4, textAlign: 'center', color: 'white', position: 'relative' }}>
@@ -94,11 +95,11 @@ const Profile: React.FC = () => {
 
       <Avatar
         alt="Profile Picture"
-        src={user.avatar}
+        src={userData.avatar}
         sx={{ width: 100, height: 100, margin: '16px auto' }}
       />
       <Typography variant="h4" sx={{ color: 'white' }}>
-        Hi {user.name ? user.name : user.email}
+        Hi {userData.name ? userData.name : userData.email}
       </Typography>
       {!isEditing ? (
         <>
@@ -121,7 +122,7 @@ const Profile: React.FC = () => {
         >
           <TextField
             label="Name"
-            value={updatedUser?.name || ''}
+            value={updatedUser?.name || userData.name}
             onChange={(e) => handleChange('name', e.target.value)}
             fullWidth
             margin="normal"
@@ -131,7 +132,7 @@ const Profile: React.FC = () => {
           <Box display="flex" alignItems="center" gap={2}>
             <TextField
               label="Avatar URL"
-              value={updatedUser?.avatar || ''}
+              value={updatedUser?.avatar || userData.avatar}
               onChange={(e) => handleChange('avatar', e.target.value)}
               fullWidth
               margin="normal"

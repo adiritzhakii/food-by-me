@@ -79,7 +79,6 @@ const Register = () => {
             label="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            autoFocus
             
           />
           <TextField

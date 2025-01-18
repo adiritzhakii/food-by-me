@@ -8,13 +8,16 @@ import UserOauthModel, { IOauthUser } from '../models/oauth_user_model';
 
 const register = async (req: Request, res: Response) => {
     try {
+        console.log(req.body)
         const password = req.body.password;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await userModel.create({
             name: req.body.name,
             email: req.body.email,
+            avatar: 'placeholder',
             password: hashedPassword
         });
+        console.log(user)
         res.status(200).send(user);
     } catch (err: any) {
         res.status(400).send("wrong email or password");
@@ -270,7 +273,7 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
             res.status(404).send("Profile not found");
             return;
           } else {
-            res.status(200).json({...user});
+            res.status(200).json({name: user.name, email: user.email, avatar: user.avatar});
           }
     } catch (error) {
         res.status(400).send(error);
