@@ -6,7 +6,7 @@ import Posts from '../components/Posts';
 import { deleteCookieData } from '../utils/cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, setUserData } from '../store/authSlice';
-import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery } from '../store/serverApi'
+import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema } from '../store/serverApi'
 import { RootState } from '../store/store';
 
 interface UserProfile {
@@ -16,16 +16,19 @@ interface UserProfile {
 }
 
 const Profile: React.FC = () => {
-  const {userData} = useSelector((state: RootState) => state.auth);
+  const {userData, refreshToken, provider } = useSelector((state: RootState) => state.auth);
 
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UserProfile>(userData ? userData : {email: '', name: '', avatar: ''});
   const [serverLogout] = usePostAuthLogoutMutation();
-  const { refreshToken, provider } = useSelector((state: RootState) => state.auth)
   
   const navigate = useNavigate();
   
-  const {refetch, data} = useGetAuthGetProfileQuery();
+  const { refetch, data } = useGetAuthGetProfileQuery(
+    { provider: provider as ProviderSchema }, // Ensure provider is of type ProviderSchema
+    { skip: !provider } // Skip the query if provider is not available
+  );
+  
   const dispatch = useDispatch()
 
   useEffect(() => {

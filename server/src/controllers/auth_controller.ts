@@ -124,7 +124,6 @@ const verifyAccessToken = (refreshToken: string | undefined, provider: providerS
                     user = await userModel.findById(userId);
                 }
                 if (!user) {
-                    console.log("qwer")
                     reject("Access Denied");
                     return;
                 }
@@ -265,20 +264,27 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
       res.status(400).json({ error: 'Google OAuth failed' });
     }
   };
+
   export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const userId: String = req.params.userId;
-    try{
-        const user = await userModel.findById(userId);
-        if (user === null) {
+    const provider: providerSchema = req.query.provider as providerSchema;
+
+    try {
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
             res.status(404).send("Profile not found");
             return;
-          } else {
-            res.status(200).json({name: user.name, email: user.email, avatar: user.avatar});
-          }
+        }
+
+        res.status(200).json({name: user.name, email: user.email, avatar: user.avatar});
     } catch (error) {
         res.status(400).send(error);
     }
-
   }
 
 export default {
