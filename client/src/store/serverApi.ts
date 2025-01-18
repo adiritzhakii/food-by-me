@@ -72,6 +72,32 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    postAuthSetAvatar: build.mutation<
+      PostAuthSetAvatarApiResponse,
+      PostAuthSetAvatarApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/setAvatar`,
+        method: "POST",
+        body: queryArg.body,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
+    }),
+    postAuthEditProfile: build.mutation<
+      PostAuthEditProfileApiResponse,
+      PostAuthEditProfileApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/editProfile`,
+        method: "POST",
+        body: queryArg.body,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
+    }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
     }),
@@ -172,6 +198,32 @@ export type GetAuthGetProfileApiResponse =
 export type GetAuthGetProfileApiArg = {
   provider: ProviderSchema;
 };
+export type PostAuthSetAvatarApiResponse =
+  /** status 200 Successfully set the new avatar */ {
+    message?: string;
+  };
+export type PostAuthSetAvatarApiArg = {
+  provider: ProviderSchema;
+  body: {
+    /** The image file to set as the new avatar */
+    image?: Blob;
+  };
+};
+export type PostAuthEditProfileApiResponse =
+  /** status 200 Successfully set properties for user */ {
+    name?: string;
+    email?: string;
+    avatar?: string;
+  };
+export type PostAuthEditProfileApiArg = {
+  provider: ProviderSchema;
+  body: {
+    /** Updated name for user */
+    name?: string;
+    /** URL for avatar image */
+    avatar?: string;
+  };
+};
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -242,6 +294,8 @@ export const {
   usePostAuthOauthRegisterMutation,
   usePostAuthOauthLoginMutation,
   useGetAuthGetProfileQuery,
+  usePostAuthSetAvatarMutation,
+  usePostAuthEditProfileMutation,
   useGetCommentsQuery,
   usePostCommentsMutation,
   useGetCommentsByIdQuery,

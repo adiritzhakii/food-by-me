@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getCookieData } from '../utils/cookie';
 
-interface UserProfile {
+export interface UserProfile {
   email: string;
   name: string;
   avatar: string;

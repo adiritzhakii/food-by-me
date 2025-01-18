@@ -6,6 +6,8 @@ import { Document } from 'mongoose';
 import {verifyGoogleToken} from '../utils/verifyGoogleToken'
 import UserOauthModel, { IOauthUser } from '../models/oauth_user_model';
 
+const port = process.env.PORT;
+
 const register = async (req: Request, res: Response) => {
     try {
         console.log(req.body)
@@ -282,6 +284,58 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({name: user.name, email: user.email, avatar: user.avatar});
+    } catch (error) {
+        res.status(400).send(error);
+    }
+  }
+  export const setAvatar = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    const provider: providerSchema = req.query.provider as providerSchema;
+    const imagePath : string = req.params.imagePath;
+    try{
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
+            res.status(404).send("Profile not found");
+            return;
+        }
+        user.avatar = `http://localhost:${port}/api/public/${imagePath}`
+        user.save();
+
+        res.status(200).send({avatar: user.avatar});
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
+  }
+
+  export const editProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    const provider: providerSchema = req.query.provider as providerSchema;
+    const updatedUserData = req.body;
+    try{
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
+            res.status(404).send("Profile not found");
+            return;
+        }
+        user.name = updatedUserData.name;
+        if (updatedUserData.avatar){
+            user.avatar = updatedUserData.avatar;
+        }
+        user.save();
+
+        res.status(200).send({msg: "Image upload successfully"});
+
     } catch (error) {
         res.status(400).send(error);
     }
