@@ -30,6 +30,9 @@ import authController, { authMiddleware, getProfile, loginOAuthHandler, register
 *         - email
 *         - password
 *       properties:
+*         name:
+*           type: string
+*           description: The user name
 *         email:
 *           type: string
 *           description: The user email
@@ -37,6 +40,7 @@ import authController, { authMiddleware, getProfile, loginOAuthHandler, register
 *           type: string
 *           description: The user password
 *       example:
+*         name: 'Alice'
 *         email: 'alice@gmail.com'
 *         password: '123456'
 *     UserDB:

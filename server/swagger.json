@@ -682,6 +682,10 @@
           "password"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "The user name"
+          },
           "email": {
             "type": "string",
             "description": "The user email"
@@ -692,6 +696,7 @@
           }
         },
         "example": {
+          "name": "Alice",
           "email": "alice@gmail.com",
           "password": "123456"
         }

@@ -201,6 +201,8 @@ export type DeletePostsByIdApiArg = {
   id: string;
 };
 export type User = {
+  /** The user name */
+  name?: string;
   /** The user email */
   email: string;
   /** The user password */
