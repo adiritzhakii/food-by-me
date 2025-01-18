@@ -117,7 +117,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             fullWidth
             multiline
             rows={4}
-            placeholder="What's on your mind?"
+            placeholder="Upload a picture of your food and click the button to generate a post!"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
             variant="outlined"

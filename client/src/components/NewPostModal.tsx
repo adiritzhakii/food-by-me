@@ -89,7 +89,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             fullWidth
             multiline
             rows={4}
-            placeholder="What's on your mind?"
+            placeholder="What did you ate recently?"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
             variant="outlined"

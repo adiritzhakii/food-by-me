@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Avatar, Box, Button, TextField, Typography, IconButton } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
-import Posts from '../components/Posts';
+import PostBox from '../components/PostBox';
 import { deleteCookieData } from '../utils/cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, setUserData } from '../store/authSlice';
-import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema } from '../store/serverApi'
+import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema, useGetPostsQuery } from '../store/serverApi'
 import { RootState } from '../store/store';
 import { EditProfile } from '../components/editProfile';
 
 const Profile: React.FC = () => {
-  const {userData, refreshToken, provider } = useSelector((state: RootState) => state.auth);
-  console.log(userData)
+  const {userData, refreshToken, provider, userId } = useSelector((state: RootState) => state.auth);
+
   const [isEditing, setIsEditing] = useState(false);
   const [serverLogout] = usePostAuthLogoutMutation();
   const dispatch = useDispatch()
@@ -21,13 +21,14 @@ const Profile: React.FC = () => {
   
   const { refetch, data } = useGetAuthGetProfileQuery(
     { provider: provider as ProviderSchema }, // Ensure provider is of type ProviderSchema
-     // Skip the query if provider is not available
   );
+
+  const userPosts = useGetPostsQuery({owner: userId}).data;
+  console.log('User posts:', userPosts);
 
   useEffect(() => {
     if (data) {
       dispatch(setUserData(data))
-      console.log('User data:', userData);
     }
   }
   , [data])
@@ -70,7 +71,12 @@ const Profile: React.FC = () => {
           <Button variant="contained" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
             Edit
           </Button>
-          <Posts />
+
+            {userPosts && userPosts.length > 0 ? userPosts.map((post: any) => (
+            <PostBox key={post._id} post={post} />
+            )) : 
+            <Typography variant="h1" sx={{ mt: '20px', color: 'white' }}>No posts yet! 😢</Typography>
+          }
         </>
       ) : (
         <EditProfile isEditing={isEditing} setIsEditing={setIsEditing}/>

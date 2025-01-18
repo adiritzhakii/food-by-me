@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux';
-import Posts from '../components/Posts';
+import Posts from '../components/PostBox';
 import { RootState } from '../store/store';
 import axios from 'axios';
 
