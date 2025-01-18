@@ -8,28 +8,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout, setUserData } from '../store/authSlice';
 import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema } from '../store/serverApi'
 import { RootState } from '../store/store';
-
-interface UserProfile {
-  email: string;
-  name: string;
-  avatar?: string;
-}
+import { EditProfile } from '../components/editProfile';
 
 const Profile: React.FC = () => {
   const {userData, refreshToken, provider } = useSelector((state: RootState) => state.auth);
-
+  console.log(userData)
   const [isEditing, setIsEditing] = useState(false);
-  const [updatedUser, setUpdatedUser] = useState<UserProfile>(userData ? userData : {email: '', name: '', avatar: ''});
   const [serverLogout] = usePostAuthLogoutMutation();
+  const dispatch = useDispatch()
   
   const navigate = useNavigate();
   
   const { refetch, data } = useGetAuthGetProfileQuery(
     { provider: provider as ProviderSchema }, // Ensure provider is of type ProviderSchema
-    { skip: !provider } // Skip the query if provider is not available
+     // Skip the query if provider is not available
   );
-  
-  const dispatch = useDispatch()
 
   useEffect(() => {
     if (data) {
@@ -39,43 +32,11 @@ const Profile: React.FC = () => {
   }
   , [data])
 
-
   const handleLogout = async () => {
     deleteCookieData('user')
     await serverLogout({body: {refreshToken, provider}})
     dispatch(logout())
     navigate('/login');
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveClick = () => {
-    
-
-
-    setIsEditing(false);
-    console.log('User updated:', updatedUser);
-  };
-
-  const handleChange = (field: keyof UserProfile, value: string) => {
-    if (updatedUser) {
-      setUpdatedUser({ ...updatedUser, [field]: value });
-    }
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (updatedUser) {
-          setUpdatedUser({ ...updatedUser, avatar: reader.result as string });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   if (!userData) return <Typography sx={{ color: 'white' }}>Loading...</Typography>;
@@ -106,66 +67,13 @@ const Profile: React.FC = () => {
       </Typography>
       {!isEditing ? (
         <>
-          <Button variant="contained" onClick={handleEditClick} sx={{ mt: 2 }}>
+          <Button variant="contained" onClick={() => setIsEditing(true)} sx={{ mt: 2 }}>
             Edit
           </Button>
           <Posts />
         </>
       ) : (
-        <Box
-          sx={{
-            backgroundColor: 'white',
-            borderRadius: 4,
-            width: '33%',
-            mx: 'auto',
-            mt: 4,
-            p: 4,
-            boxShadow: 3,
-          }}
-        >
-          <TextField
-            label="Name"
-            value={updatedUser?.name || userData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'black' } }}
-            InputProps={{ style: { color: 'black' } }}
-          />
-          <Box display="flex" alignItems="center" gap={2}>
-            <TextField
-              label="Avatar URL"
-              value={updatedUser?.avatar || userData.avatar}
-              onChange={(e) => handleChange('avatar', e.target.value)}
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ style: { color: 'black' } }}
-              InputProps={{ style: { color: 'black' } }}
-            />
-            <Button
-              variant="outlined"
-              component="label"
-              sx={{ marginTop: '8px' }}
-            >
-              Upload Image
-              <input type="file" hidden onChange={handleImageUpload} />
-            </Button>
-          </Box>
-          <Button
-            variant="contained"
-            onClick={handleSaveClick}
-            sx={{ mt: 2, marginRight: 2 }}
-          >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => setIsEditing(false)}
-            sx={{ mt: 2 }}
-          >
-            Cancel
-          </Button>
-        </Box>
+        <EditProfile isEditing={isEditing} setIsEditing={setIsEditing}/>
       )}
     </Box>
   );

@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
-import authController, { authMiddleware, getProfile, loginOAuthHandler, registerOAuthHandler } from "../controllers/auth_controller";
+import authController, { authMiddleware, editProfile, getProfile, loginOAuthHandler, registerOAuthHandler, setAvatar } from "../controllers/auth_controller";
+import { createImage } from "../middleware/upload-image";
 
 
 /**
@@ -350,5 +351,129 @@ router.post('/oauth-login', loginOAuthHandler)
  */
 router.get('/getProfile', authMiddleware, getProfile);
 
+/**
+ * @swagger
+ * /auth/setAvatar:
+ *   post:
+ *     summary: Upload image and set new Avatar
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *     - name: provider
+ *       in: query
+ *       required: true
+ *       schema:
+ *         $ref: '#/components/schemas/providerSchema'
+ *         example: Local
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                  type: string
+ *                  format: binary
+ *                  description: "The image file to set as the new avatar"
+ *     responses:
+ *       200:
+ *         description: Successfully set the new avatar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Avatar set successfully"
+ *       400:
+ *         description: Bad request, possibly missing the required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing image or invalid provider"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while processing the avatar upload"
+ */
+router.post('/setAvatar', authMiddleware, createImage, setAvatar)
+
+
+/**
+ * @swagger
+ * /auth/editProfile:
+ *   post:
+ *     summary: Edit name and avatar properties
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *     - name: provider
+ *       in: query
+ *       required: true
+ *       schema:
+ *         $ref: '#/components/schemas/providerSchema'
+ *         example: Local
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                  type: string
+ *                  description: "Updated name for user"
+ *               avatar:
+ *                  type: string
+ *                  description: "URL for avatar image"
+ *     responses:
+ *       200:
+ *         description: Successfully set properties for user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   example: "Avatar and name set successfully"
+ *                 email:
+ *                   type: string
+ *                 avatar:
+ *                   type: string
+ *       400:
+ *         description: Bad request, possibly missing the required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing property or invalid provider"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while processing the avatar upload"
+ */
+router.post('/editProfile', authMiddleware, editProfile)
 
 export default router;
