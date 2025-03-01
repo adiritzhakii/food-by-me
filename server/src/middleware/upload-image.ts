@@ -14,7 +14,7 @@ declare global {
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-        const absolutePath = path.resolve(__dirname, '..', 'profile-images');
+        const absolutePath = path.resolve(__dirname, '..', 'blob-images');
         cb(null, absolutePath);
     },
     filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {

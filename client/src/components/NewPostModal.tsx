@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { RootState } from '../store/store';
 
 const modalStyle = {
   position: 'absolute',
@@ -15,16 +18,30 @@ const modalStyle = {
 };
 
 const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const { token } = useSelector((state: RootState) => state.auth); 
+
+  const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  const handlePostSubmit = () => {
+  const handlePostSubmit = async () => {
     const postData = {
+      title: postTitle,
       content: postContent,
-      image: previewImage,
+      image: image,
     };
-    console.log('New Post Data:', postData);
+
+    try {
+      const response = await axios.post(`http://localhost:3000/posts`, postData, {
+          headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
+      });
+      console.log('Post created:', response.data);
+    } catch (error: any) {
+        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+    }
+
+    setPostTitle('');
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
@@ -84,6 +101,16 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
         {/* Modal Content */}
         <Box sx={{ padding: '24px' }}>
+        <TextField
+            fullWidth
+            multiline
+            rows={1}
+            placeholder="Post Title"
+            value={postTitle}
+            onChange={(e) => setPostTitle(e.target.value)}
+            variant="outlined"
+            sx={{ marginBottom: '24px' }}
+          />
           {/* Text Area for Post Content */}
           <TextField
             fullWidth
@@ -113,8 +140,8 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 src={previewImage}
                 alt="Preview"
                 style={{
-                  width: '100%',
-                  maxHeight: '300px',
+                  width: '40%',
+                  maxHeight: '150px',
                   objectFit: 'cover',
                   borderRadius: '8px',
                 }}

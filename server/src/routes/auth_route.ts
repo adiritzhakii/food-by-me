@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import authController, { authMiddleware, editProfile, getProfile, loginOAuthHandler, registerOAuthHandler, setAvatar } from "../controllers/auth_controller";
+import authController, { authMiddleware, editProfile, getProfile, getUserById, loginOAuthHandler, registerOAuthHandler, setAvatar } from "../controllers/auth_controller";
 import { createImage } from "../middleware/upload-image";
 
 
@@ -320,6 +320,61 @@ router.post('/oauth-register', registerOAuthHandler);
  */
 
 router.post('/oauth-login', loginOAuthHandler)
+
+/**
+ * @swagger
+ * /auth/getUserById/{id}:
+ *   get:
+ *     summary: Get user by ID
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user ID
+ *         example: 60d0fe4f5311236168a109ca
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserDB'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid user ID"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while retrieving the user"
+ */
+router.get('/getUserById/:id', authMiddleware, getUserById);
 
 /**
  * @swagger

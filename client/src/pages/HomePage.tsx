@@ -1,84 +1,80 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import Posts from '../components/PostBox';
+import Posts, { IPostBox } from '../components/PostBox';
 import { RootState } from '../store/store';
 import axios from 'axios';
+import { useGetPostsQuery, useGetAuthGetUserByIdByIdQuery } from '../store/serverApi';
+import PostBox from '../components/PostBox';
+
+type Post = {
+    _id: string;
+    title: string;
+    content: string;
+    owner: string;
+    likes: number;
+    picture?: string;
+}
 
 
+const HomePage: React.FC = () => {
+    const { token } = useSelector((state: RootState) => state.auth);
+    const [posts, setPosts] = useState<IPostBox[]>([]);
+    const [loading, setLoading] = useState(true);
 
-const HomePage = () => {
-    const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
-    const {token} = useSelector((state: RootState) => state.auth)
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setSelectedImage(file);
-            setPreview(URL.createObjectURL(file)); // Create a temporary URL for preview
-        }
-    };
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/posts');
+                const rawPosts = response.data; // Assuming it's an array
 
-    const handleUpload = async () => {
-        if (!selectedImage) {
-            alert("Please select an image to upload!");
-            return;
-        }
+                const postPromises = rawPosts.map(async (post: Post) => {
+                    const userResponse = await axios.get(
+                        `http://localhost:3000/auth/getUserById/${post.owner}`,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        }
+                    );
 
-        const formData = new FormData();
-        formData.append('image', selectedImage);
+                    return {
+                        _id: post._id,
+                        title: post.title,
+                        content: post.content,
+                        likes: post.likes,
+                        picture: post.picture || '',
+                        user: {
+                            name: userResponse?.data?.name || 'Unknown User',
+                            avatar: userResponse?.data?.avatar || 'https://via.placeholder.com/150',
+                        },
+                    } as IPostBox;
+                });
 
-        try {
-            const response = await axios.post('http://localhost:3000/auth/setAvatar', formData, {
-                headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
-            });
-            alert(`Upload successful: ${response.data.message}`);
-        } catch (error: any) {
-            alert(`Upload failed: ${error.response?.data?.message || error.message}`);
-        }
-    };
+                const processedPosts = await Promise.all(postPromises);
+                setPosts(processedPosts);
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPosts();
+    }, [token]);
+
+    console.log(posts);
 
     return (
-        <div style={{ margin: '20px' }}>
-            <h2>Image Upload</h2>
-
-            {/* File input */}
-            <input type="file" accept="image/*" onChange={handleImageChange} style={{ margin: '10px 0' }} />
-
-            {/* Preview the selected image */}
-            {preview && (
-                <div style={{ marginBottom: '10px' }}>
-                    <h4>Image Preview:</h4>
-                    <img src={preview} alt="Selected" style={{ width: '200px', height: 'auto', border: '1px solid #ccc' }} />
-                </div>
+        <>
+            {loading ? (
+                <p>Loading posts...</p>
+            ) : (
+                posts.map((post) => <PostBox key={post._id} post={post} />)
             )}
-
-            {/* Upload Button */}
-            <button
-                onClick={handleUpload}
-                disabled={!selectedImage}
-                style={{
-                    padding: '10px 20px',
-                    backgroundColor: selectedImage ? '#007bff' : '#ccc',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: selectedImage ? 'pointer' : 'not-allowed',
-                }}
-            >
-                Upload Image
-            </button>
-        </div>
+        </>
     );
-    
-    // return (
-    // <>
-    //     <h1> Feed </h1>
-    //     <Posts />
-        
-    // </>
-    // )
-
-}
+};
 
 export default HomePage;

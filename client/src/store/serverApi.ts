@@ -61,6 +61,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    getAuthGetUserByIdById: build.query<
+      GetAuthGetUserByIdByIdApiResponse,
+      GetAuthGetUserByIdByIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/auth/getUserById/${queryArg.id}` }),
+    }),
     getAuthGetProfile: build.query<
       GetAuthGetProfileApiResponse,
       GetAuthGetProfileApiArg
@@ -198,6 +204,12 @@ export type PostAuthOauthLoginApiArg = {
     crednitail?: string;
   };
 };
+export type GetAuthGetUserByIdByIdApiResponse =
+  /** status 200 Successfully retrieved user */ UserDb;
+export type GetAuthGetUserByIdByIdApiArg = {
+  /** The user ID */
+  id: string;
+};
 export type GetAuthGetProfileApiResponse =
   /** status 200 Successfully retrieved profile */ UserDb;
 export type GetAuthGetProfileApiArg = {
@@ -250,7 +262,7 @@ export type DeleteCommentsByIdApiArg = {
 };
 export type GetPostsApiResponse = /** status 200 A list of posts */ Post[];
 export type GetPostsApiArg = {
-  owner?: any;
+  owner?: string;
 };
 export type PostPostsApiResponse = /** status 201 The created post */ Post;
 export type PostPostsApiArg = {
@@ -300,6 +312,7 @@ export const {
   usePostAuthRefreshMutation,
   usePostAuthOauthRegisterMutation,
   usePostAuthOauthLoginMutation,
+  useGetAuthGetUserByIdByIdQuery,
   useGetAuthGetProfileQuery,
   usePostAuthSetAvatarMutation,
   usePostAuthEditProfileMutation,

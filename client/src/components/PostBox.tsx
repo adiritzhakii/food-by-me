@@ -4,21 +4,20 @@ import { ThumbUp, Comment } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-interface Post {
-  _id: number;
+export interface IPostBox {
+  _id: string;
   title: string;
   content: string;
   likes: number;
-  comments: string[];
   user: {
     name: string;
     avatar: string;
   };
-  image?: string;
+  picture?: string;
 }
 
 interface PostBoxProps {
-  post: Post;
+  post: IPostBox;
 }
 
 const PostBox: React.FC<PostBoxProps> = ({ post }) => {
@@ -121,16 +120,20 @@ const PostBox: React.FC<PostBoxProps> = ({ post }) => {
             borderLeft: '1px solid #ddd',
           }}
         >
-          <img
-            src={post.image || 'https://via.placeholder.com/150'}
-            alt="Post"
-            style={{
-              width: '150px',
-              height: '150px',
-              objectFit: 'cover',
-              borderRadius: '8px',
-            }}
-          />
+        <img
+          src={
+            post.picture && !post.picture.endsWith("undefined")
+              ? post.picture
+              : "food-by-me-icon.png"
+          }
+          alt="Post"
+          style={{
+            width: "150px",
+            height: "150px",
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
+        />
         </Box>
       </Card>
     </div>

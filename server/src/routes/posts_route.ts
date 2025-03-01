@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import postsController from "../controllers/posts_controller";
 import { authMiddleware } from "../controllers/auth_controller";
+import { createImage } from "../middleware/upload-image";
 
 
 
@@ -42,7 +43,8 @@ import { authMiddleware } from "../controllers/auth_controller";
  *     parameters:
  *       - in: query
  *         name: owner
- *         type: string
+ *         schema:
+ *           type: string
  *         required: false
  *         example: Local
  *     responses:
@@ -123,7 +125,7 @@ router.get("/:id", (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/", authMiddleware, postsController.create.bind(postsController));
+router.post("/", authMiddleware, createImage,postsController.create.bind(postsController));
 
 
 /**

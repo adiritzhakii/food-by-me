@@ -267,6 +267,24 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
     }
   };
 
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params;
+
+  try {
+    const user = await UserOauthModel.findById(userId);
+    if (!user) {
+        const user = await userModel.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        }
+        return;
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while retrieving the user' });
+  }
+};
+
   export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const userId: String = req.params.userId;
     const provider: providerSchema = req.query.provider as providerSchema;
