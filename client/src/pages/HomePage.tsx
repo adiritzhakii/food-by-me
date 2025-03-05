@@ -27,13 +27,14 @@ const HomePage: React.FC = () => {
             try {
                 const response = await axios.get('http://localhost:3000/posts');
                 const rawPosts = response.data; // Assuming it's an array
+                console.log("Posts from server:", rawPosts);
 
                 const postPromises = rawPosts.map(async (post: Post) => {
                     const userResponse = await axios.get(
                         `http://localhost:3000/auth/getUserById/${post.owner}`,
                         {
                             headers: {
-                                'Content-Type': 'multipart/form-data',
+                                'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${token}`,
                             },
                         }
@@ -46,14 +47,15 @@ const HomePage: React.FC = () => {
                         likes: post.likes,
                         picture: post.picture || '',
                         user: {
-                            name: userResponse?.data?.name || 'Unknown User',
-                            avatar: userResponse?.data?.avatar || 'https://via.placeholder.com/150',
+                            name: userResponse?.data?.name,
+                            avatar: userResponse?.data?.avatar,
                         },
                     } as IPostBox;
                 });
 
                 const processedPosts = await Promise.all(postPromises);
                 setPosts(processedPosts);
+                console.log("Updated posts:", processedPosts);
             } catch (error) {
                 console.error('Error fetching posts:', error);
             } finally {

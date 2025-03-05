@@ -10,7 +10,6 @@ const port = process.env.PORT;
 
 const register = async (req: Request, res: Response) => {
     try {
-        console.log(req.body)
         const password = req.body.password;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await userModel.create({
@@ -19,7 +18,6 @@ const register = async (req: Request, res: Response) => {
             avatar: 'placeholder',
             password: hashedPassword
         });
-        console.log(user)
         res.status(200).send(user);
     } catch (err: any) {
         res.status(400).send("wrong email or password");
@@ -268,16 +266,16 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
   };
 
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.params;
+  const userId  = req.params.id;
 
   try {
-    const user = await UserOauthModel.findById(userId);
-    if (!user) {
-        const user = await userModel.findById(userId);
+    let user = await UserOauthModel.findById(userId);
+    if (user == null) {
+        user = await userModel.findById(userId);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
+            return;
         }
-        return;
     }
     res.status(200).json(user);
   } catch (error) {

@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
     };
 
     if (userId) fetchUserPosts();
-  }, [userId]);
+  }, [userId,userData]);
 
   const handleLogout = async () => {
     deleteCookieData('user');
