@@ -10,6 +10,8 @@ import commentsRoute from "./routes/comments_route";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
@@ -22,6 +24,10 @@ app.use(cors());
 app.use("/posts", postsRoute);
 app.use("/auth", authController);
 app.use("/comments", commentsRoute);
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+app.use('/api/public', express.static(path.join(__dirname, 'blob-images')));
 
 const options = {
   definition: {
@@ -38,7 +44,7 @@ const options = {
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
-const initApp = () => {
+export const initApp = () => {
   return new Promise<Express>(async (resolve, reject) => {
     if (process.env.DB_CONNECTION == undefined) {
       reject("DB_CONNECTION is not defined");

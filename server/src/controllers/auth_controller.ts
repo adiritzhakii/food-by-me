@@ -6,12 +6,16 @@ import { Document } from 'mongoose';
 import {verifyGoogleToken} from '../utils/verifyGoogleToken'
 import UserOauthModel, { IOauthUser } from '../models/oauth_user_model';
 
+const port = process.env.PORT;
+
 const register = async (req: Request, res: Response) => {
     try {
         const password = req.body.password;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await userModel.create({
+            name: req.body.name,
             email: req.body.email,
+            avatar: 'placeholder',
             password: hashedPassword
         });
         res.status(200).send(user);
@@ -120,7 +124,6 @@ const verifyAccessToken = (refreshToken: string | undefined, provider: providerS
                     user = await userModel.findById(userId);
                 }
                 if (!user) {
-                    console.log("qwer")
                     reject("Access Denied");
                     return;
                 }
@@ -261,20 +264,97 @@ export const registerOAuthHandler = async (req: Request, res: Response) => {
       res.status(400).json({ error: 'Google OAuth failed' });
     }
   };
+
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
+  const userId  = req.params.id;
+
+  try {
+    let user = await UserOauthModel.findById(userId);
+    if (user == null) {
+        user = await userModel.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while retrieving the user' });
+  }
+};
+
   export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const userId: String = req.params.userId;
-    try{
-        const user = await userModel.findById(userId);
-        if (user === null) {
+    const provider: providerSchema = req.query.provider as providerSchema;
+
+    try {
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
             res.status(404).send("Profile not found");
             return;
-          } else {
-            res.status(200).json({...user});
-          }
+        }
+
+        res.status(200).json({name: user.name, email: user.email, avatar: user.avatar});
     } catch (error) {
         res.status(400).send(error);
     }
+  }
+  export const setAvatar = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    const provider: providerSchema = req.query.provider as providerSchema;
+    const imagePath : string = req.params.imagePath;
+    try{
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
+            res.status(404).send("Profile not found");
+            return;
+        }
+        user.avatar = `http://localhost:${port}/api/public/${imagePath}`
+        user.save();
 
+        res.status(200).send({avatar: user.avatar});
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
+  }
+
+  export const editProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId: String = req.params.userId;
+    const provider: providerSchema = req.query.provider as providerSchema;
+    const updatedUserData = req.body;
+    try{
+        let user;
+        if (provider === "Google"){
+            user = await UserOauthModel.findById(userId)
+        } else {
+            user = await userModel.findById(userId);
+        }
+        if (!user) {
+            res.status(404).send("Profile not found");
+            return;
+        }
+        user.name = updatedUserData.name;
+        if (updatedUserData.avatar){
+            user.avatar = updatedUserData.avatar;
+        }
+        user.save();
+
+        res.status(200).send({msg: "Image upload successfully"});
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
   }
 
 export default {

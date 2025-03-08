@@ -5,6 +5,7 @@ import { usePostAuthRegisterMutation } from '../store/serverApi'
 import OauthGoogle from '../components/OauthGoogle'
 
 const Register = () => {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -24,7 +25,7 @@ const Register = () => {
     }
 
     // Handle registration logic here
-    await serverRegister({user: {email, password}})
+    await serverRegister({user: {name, email, password}})
 
   }
   useEffect(() => {
@@ -59,6 +60,17 @@ const Register = () => {
         <OauthGoogle route='register' />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoFocus
+            
+          />
           <TextField
             variant="outlined"
             margin="normal"
@@ -67,14 +79,7 @@ const Register = () => {
             label="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            autoFocus
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <i className="fas fa-envelope" />
-                </InputAdornment>
-              ),
-            }}
+            
           />
           <TextField
             variant="outlined"
@@ -85,13 +90,7 @@ const Register = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <i className="fas fa-lock" />
-                </InputAdornment>
-              ),
-            }}
+            
           />
           <TextField
             variant="outlined"
@@ -102,13 +101,7 @@ const Register = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <i className="fas fa-lock" />
-                </InputAdornment>
-              ),
-            }}
+            
           />
 
           {error && (

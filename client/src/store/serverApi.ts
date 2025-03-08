@@ -61,11 +61,48 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    getAuthGetUserByIdById: build.query<
+      GetAuthGetUserByIdByIdApiResponse,
+      GetAuthGetUserByIdByIdApiArg
+    >({
+      query: (queryArg) => ({ url: `/auth/getUserById/${queryArg.id}` }),
+    }),
     getAuthGetProfile: build.query<
       GetAuthGetProfileApiResponse,
       GetAuthGetProfileApiArg
     >({
-      query: () => ({ url: `/auth/getProfile` }),
+      query: (queryArg) => ({
+        url: `/auth/getProfile`,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
+    }),
+    postAuthSetAvatar: build.mutation<
+      PostAuthSetAvatarApiResponse,
+      PostAuthSetAvatarApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/setAvatar`,
+        method: "POST",
+        body: queryArg.body,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
+    }),
+    postAuthEditProfile: build.mutation<
+      PostAuthEditProfileApiResponse,
+      PostAuthEditProfileApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/auth/editProfile`,
+        method: "POST",
+        body: queryArg.body,
+        params: {
+          provider: queryArg.provider,
+        },
+      }),
     }),
     getComments: build.query<GetCommentsApiResponse, GetCommentsApiArg>({
       query: () => ({ url: `/comments` }),
@@ -93,7 +130,12 @@ const injectedRtkApi = api.injectEndpoints({
       }),
     }),
     getPosts: build.query<GetPostsApiResponse, GetPostsApiArg>({
-      query: () => ({ url: `/posts` }),
+      query: (queryArg) => ({
+        url: `/posts`,
+        params: {
+          owner: queryArg.owner,
+        },
+      }),
     }),
     postPosts: build.mutation<PostPostsApiResponse, PostPostsApiArg>({
       query: (queryArg) => ({
@@ -162,9 +204,43 @@ export type PostAuthOauthLoginApiArg = {
     crednitail?: string;
   };
 };
+export type GetAuthGetUserByIdByIdApiResponse =
+  /** status 200 Successfully retrieved user */ UserDb;
+export type GetAuthGetUserByIdByIdApiArg = {
+  /** The user ID */
+  id: string;
+};
 export type GetAuthGetProfileApiResponse =
-  /** status 200 Successfully logged in */ UserDb;
-export type GetAuthGetProfileApiArg = void;
+  /** status 200 Successfully retrieved profile */ UserDb;
+export type GetAuthGetProfileApiArg = {
+  provider: ProviderSchema;
+};
+export type PostAuthSetAvatarApiResponse =
+  /** status 200 Successfully set the new avatar */ {
+    message?: string;
+  };
+export type PostAuthSetAvatarApiArg = {
+  provider: ProviderSchema;
+  body: {
+    /** The image file to set as the new avatar */
+    image?: Blob;
+  };
+};
+export type PostAuthEditProfileApiResponse =
+  /** status 200 Successfully set properties for user */ {
+    name?: string;
+    email?: string;
+    avatar?: string;
+  };
+export type PostAuthEditProfileApiArg = {
+  provider: ProviderSchema;
+  body: {
+    /** Updated name for user */
+    name?: string;
+    /** URL for avatar image */
+    avatar?: string;
+  };
+};
 export type GetCommentsApiResponse =
   /** status 200 A list of comments */ Comment[];
 export type GetCommentsApiArg = void;
@@ -185,7 +261,9 @@ export type DeleteCommentsByIdApiArg = {
   id: string;
 };
 export type GetPostsApiResponse = /** status 200 A list of posts */ Post[];
-export type GetPostsApiArg = void;
+export type GetPostsApiArg = {
+  owner?: string;
+};
 export type PostPostsApiResponse = /** status 201 The created post */ Post;
 export type PostPostsApiArg = {
   post: Post;
@@ -201,19 +279,24 @@ export type DeletePostsByIdApiArg = {
   id: string;
 };
 export type User = {
+  /** The user name */
+  name?: string;
   /** The user email */
   email: string;
   /** The user password */
   password: string;
 };
 export type UserDb = {
+  /** The user name */
+  name: string;
   /** The user email */
   email: string;
-  /** The user password */
-  password: string;
-  /** List of refershTokens */
-  refreshToken?: string[];
+  /** The user picture, can be url or path in server */
+  avatar: string;
+  /** List of refreshTokens */
+  refreshToken: string[];
 };
+export type ProviderSchema = "Local" | "Google";
 export type Comment = {
   postId?: string;
   comment?: string;
@@ -229,7 +312,10 @@ export const {
   usePostAuthRefreshMutation,
   usePostAuthOauthRegisterMutation,
   usePostAuthOauthLoginMutation,
+  useGetAuthGetUserByIdByIdQuery,
   useGetAuthGetProfileQuery,
+  usePostAuthSetAvatarMutation,
+  usePostAuthEditProfileMutation,
   useGetCommentsQuery,
   usePostCommentsMutation,
   useGetCommentsByIdQuery,

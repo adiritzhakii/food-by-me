@@ -6,6 +6,7 @@ interface userCookieSchema {
     provider: "Local" | "Google";
     token: string;
     refreshToken: string;
+    userId: string | undefined;
 }
 
 export const setCookie = (cookieData: CookieSchema, key: string) => {

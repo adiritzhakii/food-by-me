@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
-import authController, { authMiddleware, getProfile, loginOAuthHandler, registerOAuthHandler } from "../controllers/auth_controller";
+import authController, { authMiddleware, editProfile, getProfile, getUserById, loginOAuthHandler, registerOAuthHandler, setAvatar } from "../controllers/auth_controller";
+import { createImage } from "../middleware/upload-image";
 
 
 /**
@@ -11,56 +12,72 @@ import authController, { authMiddleware, getProfile, loginOAuthHandler, register
 */
 
 /**
-* @swagger
-* components:
-*   securitySchemes:
-*     bearerAuth:
-*       type: http
-*       scheme: bearer
-*       bearerFormat: JWT
-*/
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 /**
-* @swagger
-* components:
-*   schemas:
-*     User:
-*       type: object
-*       required:
-*         - email
-*         - password
-*       properties:
-*         email:
-*           type: string
-*           description: The user email
-*         password:
-*           type: string
-*           description: The user password
-*       example:
-*         email: 'alice@gmail.com'
-*         password: '123456'
-*     UserDB:
-*       type: object
-*       required:
-*         - email
-*         - password
-*       properties:
-*         email:
-*           type: string
-*           description: The user email
-*         password:
-*           type: string
-*           description: The user password
-*         refreshToken:
-*           type: array
-*           items:
-*             type: string
-*           description: List of refershTokens
-*       example:
-*         email: 'alice@gmail.com'
-*         password: '123456'
-*         refershToken: ["asd", "qwer"]
-*/
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The user name
+ *         email:
+ *           type: string
+ *           description: The user email
+ *         password:
+ *           type: string
+ *           description: The user password
+ *       example:
+ *         name: 'Alice'
+ *         email: 'alice@gmail.com'
+ *         password: '123456'
+ *     UserDB:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - avatar
+ *         - refreshToken
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The user name
+ *         email:
+ *           type: string
+ *           description: The user email
+ *         avatar:
+ *           type: string
+ *           description: The user picture, can be url or path in server
+ *         refreshToken:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of refreshTokens
+ *       example:
+ *         name: 'Alice'
+ *         email: 'alice@gmail.com'
+ *         avatar: 'https://www.google.com'
+ *         refreshToken: ["asd", "qwer"]
+ *     providerSchema:
+ *       type: string
+ *       enum:
+ *         - Local
+ *         - Google
+ *       description: The provider schema
+ */
 
 /**
 * @swagger
@@ -306,21 +323,27 @@ router.post('/oauth-login', loginOAuthHandler)
 
 /**
  * @swagger
- * /auth/getProfile:
+ * /auth/getUserById/{id}:
  *   get:
- *     summary: Get profile
+ *     summary: Get user by ID
  *     tags:
  *       - Auth
- *     security:
- *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user ID
+ *         example: 60d0fe4f5311236168a109ca
  *     responses:
  *       200:
- *         description: Successfully logged in
+ *         description: Successfully retrieved user
  *         content:
-*           application/json:
+ *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserDB'
- *       404:
+ *       400:
  *         description: Bad request
  *         content:
  *           application/json:
@@ -329,8 +352,18 @@ router.post('/oauth-login', loginOAuthHandler)
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Profile not found"
- *       401:
+ *                   example: "Invalid user ID"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
@@ -339,9 +372,163 @@ router.post('/oauth-login', loginOAuthHandler)
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Access denied"
+ *                   example: "An error occurred while retrieving the user"
  */
-router.get('profile', authMiddleware, getProfile);
+router.get('/getUserById/:id', authMiddleware, getUserById);
 
+/**
+ * @swagger
+ * /auth/getProfile:
+ *   get:
+ *     summary: Get profile
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: provider
+ *         schema:
+ *           $ref: '#/components/schemas/providerSchema'
+ *         required: true
+ *         example: Local
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserDB'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/getProfile', authMiddleware, getProfile);
+
+/**
+ * @swagger
+ * /auth/setAvatar:
+ *   post:
+ *     summary: Upload image and set new Avatar
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *     - name: provider
+ *       in: query
+ *       required: true
+ *       schema:
+ *         $ref: '#/components/schemas/providerSchema'
+ *         example: Local
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                  type: string
+ *                  format: binary
+ *                  description: "The image file to set as the new avatar"
+ *     responses:
+ *       200:
+ *         description: Successfully set the new avatar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Avatar set successfully"
+ *       400:
+ *         description: Bad request, possibly missing the required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing image or invalid provider"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while processing the avatar upload"
+ */
+router.post('/setAvatar', authMiddleware, createImage, setAvatar)
+
+
+/**
+ * @swagger
+ * /auth/editProfile:
+ *   post:
+ *     summary: Edit name and avatar properties
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *     - name: provider
+ *       in: query
+ *       required: true
+ *       schema:
+ *         $ref: '#/components/schemas/providerSchema'
+ *         example: Local
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                  type: string
+ *                  description: "Updated name for user"
+ *               avatar:
+ *                  type: string
+ *                  description: "URL for avatar image"
+ *     responses:
+ *       200:
+ *         description: Successfully set properties for user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   example: "Avatar and name set successfully"
+ *                 email:
+ *                   type: string
+ *                 avatar:
+ *                   type: string
+ *       400:
+ *         description: Bad request, possibly missing the required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing property or invalid provider"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An error occurred while processing the avatar upload"
+ */
+router.post('/editProfile', authMiddleware, editProfile)
 
 export default router;

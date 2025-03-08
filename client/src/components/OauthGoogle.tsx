@@ -26,8 +26,8 @@ function OauthGoogle({route}: oauthGoogleProps) {
             body: JSON.stringify({ credential: credentialResponse.credential }),
           });
           const data = await res.json()
-          setCookie({provider: "Google",token: data.accessToken, refreshToken: data.refreshToken}, 'user');
-          dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Google"}));
+          setCookie({provider: "Google",token: data.accessToken, refreshToken: data.refreshToken, userId: data._id}, 'user');
+          dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Google", userId: data._id}));
           navigate('/home')
           
         } catch (error) {

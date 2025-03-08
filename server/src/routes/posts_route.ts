@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import postsController from "../controllers/posts_controller";
 import { authMiddleware } from "../controllers/auth_controller";
+import { createImage } from "../middleware/upload-image";
 
 
 
@@ -39,6 +40,13 @@ import { authMiddleware } from "../controllers/auth_controller";
  *     description: Retrieves a list of all posts
  *     tags:
  *       - Posts
+ *     parameters:
+ *       - in: query
+ *         name: owner
+ *         schema:
+ *           type: string
+ *         required: false
+ *         example: Local
  *     responses:
  *       '200':
  *         description: A list of posts
@@ -117,7 +125,7 @@ router.get("/:id", (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/", authMiddleware, postsController.create.bind(postsController));
+router.post("/", authMiddleware, createImage,postsController.create.bind(postsController));
 
 
 /**
