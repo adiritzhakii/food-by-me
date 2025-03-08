@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 const modalStyle = {
   position: 'absolute',
@@ -16,16 +19,40 @@ const modalStyle = {
 };
 
 const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const { token } = useSelector((state: RootState) => state.auth); 
+  const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  const handlePostSubmit = () => {
+  const handleGenerateAIPost = async () => {
+    const genrateAIData = {
+      prompt: postTitle
+    }
+    const response = await axios.post(`http://localhost:3000/posts/generate`, genrateAIData, {
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      });
+    setPostContent(response.data.text)
+    console.log(response.data)
+  }
+
+ const handlePostSubmit = async () => {
     const postData = {
+      title: postTitle,
       content: postContent,
-      image: previewImage,
+      image: image,
     };
-    console.log('New AI Post Data:', postData);
+
+    try {
+      const response = await axios.post(`http://localhost:3000/posts`, postData, {
+          headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
+      });
+      console.log('Post created:', response.data);
+    } catch (error: any) {
+        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+    }
+
+    setPostTitle('');
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
@@ -105,19 +132,28 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                     backgroundColor: '#5e0cbe', // Slightly darker purple on hover
                 },
                 }}
-                onClick={() => console.log('Post with AI Clicked')} // Replace with actual functionality
+                onClick={handleGenerateAIPost} // Replace with actual functionality
             >
                 <RestartAltIcon />
                 Post with AI
             </Button>
             </Box>
-
+          <TextField
+            fullWidth
+            multiline
+            rows={1}
+            placeholder="Post Title"
+            value={postTitle}
+            onChange={(e) => setPostTitle(e.target.value)}
+            variant="outlined"
+            sx={{ marginBottom: '24px' }}
+          />
           {/* Text Area for Post Content */}
           <TextField
             fullWidth
             multiline
             rows={4}
-            placeholder="Upload a picture of your food and click the button to generate a post!"
+            placeholder="Write here about your food and i will generate it!"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
             variant="outlined"
