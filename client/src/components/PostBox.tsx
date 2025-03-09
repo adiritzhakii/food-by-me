@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardActions, Typography, IconButton, Avatar, Box } from '@mui/material';
-import { ThumbUp, Comment } from '@mui/icons-material';
+import { ThumbUp, Comment, Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import EditPostModal from './EditPostModal';
 
 export interface IPostBox {
   _id: string;
@@ -18,10 +19,19 @@ export interface IPostBox {
 
 interface PostBoxProps {
   post: IPostBox;
+  isEditable?: boolean;
 }
 
-const PostBox: React.FC<PostBoxProps> = ({ post }) => {
+const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
+  const handleEditClick = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditModalOpen(false);
+  };
 
   return (
     <div
@@ -104,6 +114,11 @@ const PostBox: React.FC<PostBoxProps> = ({ post }) => {
             <IconButton onClick={() => alert('Commented!')}>
               <Comment />
             </IconButton>
+            {isEditable && (
+              <IconButton onClick={handleEditClick}>
+                <Edit />
+              </IconButton>
+            )}
           </CardActions>
         </Box>
 
@@ -120,22 +135,30 @@ const PostBox: React.FC<PostBoxProps> = ({ post }) => {
             borderLeft: '1px solid #ddd',
           }}
         >
-        <img
-          src={
-            post.picture && !post.picture.endsWith("undefined")
-              ? post.picture
-              : "food-by-me-icon.png"
-          }
-          alt="Post"
-          style={{
-            width: "150px",
-            height: "150px",
-            objectFit: "cover",
-            borderRadius: "8px",
-          }}
-        />
+          <img
+            src={
+              post.picture && !post.picture.endsWith("undefined")
+                ? post.picture
+                : "food-by-me-icon.png"
+            }
+            alt="Post"
+            style={{
+              width: "150px",
+              height: "150px",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
         </Box>
       </Card>
+
+      {isEditable && (
+        <EditPostModal
+          open={isEditModalOpen}
+          onClose={handleCloseModal}
+          post={post}
+        />
+      )}
     </div>
   );
 };

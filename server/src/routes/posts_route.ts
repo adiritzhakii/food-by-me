@@ -4,8 +4,6 @@ import postsController from "../controllers/posts_controller";
 import { authMiddleware } from "../controllers/auth_controller";
 import { createImage } from "../middleware/upload-image";
 
-
-
 /**
 * @swagger
 * tags:
@@ -30,7 +28,6 @@ import { createImage } from "../middleware/upload-image";
  *           type: string
  *           example: This is the content of the post.
  */
-
 
 /**
  * @swagger
@@ -59,9 +56,7 @@ import { createImage } from "../middleware/upload-image";
  *       '500':
  *         description: Internal server error
  */
-
 router.get("/", postsController.getAll.bind(postsController));
-
 
 /**
  * @swagger
@@ -94,7 +89,6 @@ router.get("/:id", (req, res) => {
     postsController.getById(req, res);
 });
 
-
 /**
  * @swagger
  * /posts:
@@ -125,8 +119,48 @@ router.get("/:id", (req, res) => {
  *       '500':
  *         description: Internal server error
  */
-router.post("/", authMiddleware, createImage,postsController.create.bind(postsController));
+router.post("/", authMiddleware, createImage, postsController.create.bind(postsController));
 
+/**
+ * @swagger
+ * /posts/{id}:
+ *   put:
+ *     summary: Update a post by ID
+ *     description: Updates a post by its ID
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The post ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       '200':
+ *         description: The updated post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       '400':
+ *         description: Invalid input
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Post not found
+ *       '500':
+ *         description: Internal server error
+ */
+router.put("/:id", authMiddleware, createImage, postsController.update.bind(postsController));
 
 /**
  * @swagger
@@ -156,7 +190,6 @@ router.post("/", authMiddleware, createImage,postsController.create.bind(postsCo
  *         description: Internal server error
  */
 router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsController));
-
 
 /**
  * @swagger
@@ -196,6 +229,6 @@ router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsContr
  *       '500':
  *         description: Internal server error
  */
-router.post("/generate",authMiddleware, postsController.genAIPost.bind(postsController));
+router.post("/generate", authMiddleware, postsController.genAIPost.bind(postsController));
 
 export default router;
