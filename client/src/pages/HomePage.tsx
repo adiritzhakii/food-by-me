@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import Posts, { IPostBox } from '../components/PostBox';
 import { RootState } from '../store/store';
 import axios from 'axios';
-import { useGetPostsQuery, useGetAuthGetUserByIdByIdQuery } from '../store/serverApi';
 import PostBox from '../components/PostBox';
+import Pagination from '../components/Pagination';
+import { Box } from '@mui/material';
 
 type Post = {
     _id: string;
@@ -15,12 +16,13 @@ type Post = {
     picture?: string;
 }
 
+const POSTS_PER_PAGE = 3;
 
 const HomePage: React.FC = () => {
     const { token } = useSelector((state: RootState) => state.auth);
     const [posts, setPosts] = useState<IPostBox[]>([]);
     const [loading, setLoading] = useState(true);
-
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -66,14 +68,28 @@ const HomePage: React.FC = () => {
         fetchPosts();
     }, [token]);
 
-    console.log(posts);
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const currentPosts = posts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     return (
         <>
             {loading ? (
                 <p>Loading posts...</p>
             ) : (
-                posts.map((post) => <PostBox key={post._id} post={post} />)
+                <>
+                    {currentPosts.map((post) => <PostBox key={post._id} post={post} />)}
+                    <Box display="flex" justifyContent="center" alignItems="center" mr={"10%"} mt={4} mb={4}>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                    </Box>
+                </>
             )}
         </>
     );
