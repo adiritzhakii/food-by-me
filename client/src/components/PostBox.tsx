@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Card, CardActions, Typography, IconButton, Avatar, Box } from '@mui/material';
+import { Card, CardActions, Typography, IconButton, Avatar, Box, Badge } from '@mui/material';
 import { ThumbUp, Comment, Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import EditPostModal from './EditPostModal';
+import axios from 'axios';
 
 export interface IPostBox {
   _id: string;
   title: string;
   content: string;
-  likes: number;
+  likes: string[]; // Updated to be an array of strings
   user: {
     name: string;
     avatar: string;
@@ -23,7 +24,10 @@ interface PostBoxProps {
 }
 
 const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
+  const { token, userId } = useSelector((state: RootState) => state.auth);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.likes.includes(userId || ''));
+  const [likes, setLikes] = useState(post.likes.length);
 
   const handleEditClick = () => {
     setEditModalOpen(true);
@@ -31,6 +35,19 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
 
   const handleCloseModal = () => {
     setEditModalOpen(false);
+  };
+
+  const handleLikeClick = async () => {
+    try {
+      const response = await axios.post(`http://localhost:3000/posts/${post._id}/like`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      setIsLiked(!isLiked);
+      setLikes(response.data.likes.length);
+      console.log('Liked the post:', response.data.likes);
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
   };
 
   return (
@@ -104,13 +121,14 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
             sx={{
               display: 'flex',
               gap: '16px',
-              marginTop: 'auto', // Push to the bottom
+              marginTop: 'auto',
             }}
           >
-            <IconButton onClick={() => alert('Liked!')}>
-              <ThumbUp />
-            </IconButton>
-            <Typography variant="caption">{post.likes || 0}</Typography>
+            <Badge badgeContent={likes} color={isLiked ? 'primary' : 'default'}>
+              <IconButton onClick={handleLikeClick} color={isLiked ? 'primary' : 'default'}>
+                <ThumbUp />
+              </IconButton>
+            </Badge>
             <IconButton onClick={() => alert('Commented!')}>
               <Comment />
             </IconButton>

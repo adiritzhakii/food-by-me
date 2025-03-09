@@ -231,4 +231,39 @@ router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsContr
  */
 router.post("/generate", authMiddleware, postsController.genAIPost.bind(postsController));
 
+/**
+ * @swagger
+ * /posts/{id}/like:
+ *   post:
+ *     summary: Like or unlike a post by ID
+ *     description: Likes or unlikes a post by its ID
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The post ID
+ *     responses:
+ *       '200':
+ *         description: The updated post with the new like status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       '400':
+ *         description: Invalid input
+ *       '401':
+ *         description: Unauthorized
+ *       '404':
+ *         description: Post not found
+ *       '500':
+ *         description: Internal server error
+ */
+router.post("/:id/like", authMiddleware, postsController.likePost.bind(postsController));
+
 export default router;

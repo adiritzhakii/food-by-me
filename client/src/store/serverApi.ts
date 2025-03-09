@@ -147,11 +147,37 @@ const injectedRtkApi = api.injectEndpoints({
     getPostsById: build.query<GetPostsByIdApiResponse, GetPostsByIdApiArg>({
       query: (queryArg) => ({ url: `/posts/${queryArg.id}` }),
     }),
+    putPostsById: build.mutation<PutPostsByIdApiResponse, PutPostsByIdApiArg>({
+      query: (queryArg) => ({
+        url: `/posts/${queryArg.id}`,
+        method: "PUT",
+        body: queryArg.post,
+      }),
+    }),
     deletePostsById: build.mutation<
       DeletePostsByIdApiResponse,
       DeletePostsByIdApiArg
     >({
       query: (queryArg) => ({ url: `/posts/${queryArg.id}`, method: "DELETE" }),
+    }),
+    postPostsGenerate: build.mutation<
+      PostPostsGenerateApiResponse,
+      PostPostsGenerateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/posts/generate`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
+    postPostsByIdLike: build.mutation<
+      PostPostsByIdLikeApiResponse,
+      PostPostsByIdLikeApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/posts/${queryArg.id}/like`,
+        method: "POST",
+      }),
     }),
   }),
   overrideExisting: false,
@@ -273,8 +299,25 @@ export type GetPostsByIdApiArg = {
   /** The post ID */
   id: string;
 };
+export type PutPostsByIdApiResponse = /** status 200 The updated post */ Post;
+export type PutPostsByIdApiArg = {
+  /** The post ID */
+  id: string;
+  post: Post;
+};
 export type DeletePostsByIdApiResponse = unknown;
 export type DeletePostsByIdApiArg = {
+  /** The post ID */
+  id: string;
+};
+export type PostPostsGenerateApiResponse =
+  /** status 201 The created post */ Blob;
+export type PostPostsGenerateApiArg = {
+  body: Blob;
+};
+export type PostPostsByIdLikeApiResponse =
+  /** status 200 The updated post with the new like status */ Post;
+export type PostPostsByIdLikeApiArg = {
   /** The post ID */
   id: string;
 };
@@ -323,5 +366,8 @@ export const {
   useGetPostsQuery,
   usePostPostsMutation,
   useGetPostsByIdQuery,
+  usePutPostsByIdMutation,
   useDeletePostsByIdMutation,
+  usePostPostsGenerateMutation,
+  usePostPostsByIdLikeMutation,
 } = injectedRtkApi;

@@ -21,7 +21,7 @@ class PostController extends BaseController<IPost> {
             ...req.body,
             owner: userId,
             picture: `http://localhost:${port}/api/public/${postImage}`,
-            likes: 0,
+            likes: [],
         };
         req.body = post;
         super.create(req, res);
@@ -58,6 +58,29 @@ class PostController extends BaseController<IPost> {
                 res.status(404).send("not found");
             }
             res.status(200).send(updatedItem);
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    }
+
+    async likePost(req: Request, res: Response): Promise<void> {
+        const postId = req.params.id;
+        const userId = req.params.userId;
+
+        try {
+            const post = await this.model.findById(postId);
+            if (!post) {
+                res.status(404).send("Post not found");
+            }
+
+            if (post?.likes.includes(userId)) {
+                post.likes = post.likes.filter((id) => id !== userId);
+            } else {
+                post?.likes.push(userId);
+            }
+
+            await post?.save();
+            res.status(200).send(post);
         } catch (error) {
             res.status(400).send(error);
         }

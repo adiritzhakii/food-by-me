@@ -12,7 +12,7 @@ type Post = {
     title: string;
     content: string;
     owner: string;
-    likes: number;
+    likes: [];
     picture?: string;
 }
 
