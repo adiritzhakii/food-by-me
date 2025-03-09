@@ -140,7 +140,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 src={previewImage}
                 alt="Preview"
                 style={{
-                  width: '40%',
+                  width: '30%',
                   maxHeight: '150px',
                   objectFit: 'cover',
                   borderRadius: '8px',

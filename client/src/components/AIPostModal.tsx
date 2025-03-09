@@ -177,7 +177,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 src={previewImage}
                 alt="Preview"
                 style={{
-                  width: '100%',
+                  width: '30%',
                   maxHeight: '300px',
                   objectFit: 'cover',
                   borderRadius: '8px',
