@@ -157,4 +157,45 @@ router.post("/", authMiddleware, createImage,postsController.create.bind(postsCo
  */
 router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsController));
 
+
+/**
+ * @swagger
+ * /posts/generate:
+ *   post:
+ *     summary: Generate AI post
+ *     description: Generate new AI post via GEMINI
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           type: object
+ *           required:
+ *            - prompt
+ *           properties:
+ *             prompt:
+ *               type: string
+ *               example: My First Post
+ *     responses:
+ *       '201':
+ *         description: The created post
+ *         content:
+ *           application/json:
+ *             type: object
+ *             required:
+ *              - text
+ *             properties:
+ *               text:
+ *                 type: string
+ *                 example: My generated AI POST
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal server error
+ */
+router.post("/generate",authMiddleware, postsController.genAIPost.bind(postsController));
+
 export default router;

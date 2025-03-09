@@ -3,6 +3,8 @@ docker-compose.yml
 .mongodb
 # DevContainer
 .devcontainer
+server/.env_dev
+server/.env_test
 
 # Logs
 logs
