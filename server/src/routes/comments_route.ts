@@ -45,7 +45,14 @@ import { authMiddleware } from "../controllers/auth_controller";
 *               items:
 *                 $ref: '#/components/schemas/Comment'
 */
-router.get("/", commentsController.getAll.bind(commentsController));
+router.get("/", async (req, res) => {
+    const { postId } = req.query;
+    if (postId) {
+      commentsController.getByPostId(req, res);
+    } else {
+      commentsController.getAll(req, res);
+    }
+});
 
 /**
 * @swagger

@@ -4,13 +4,14 @@ import { ThumbUp, Comment, Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import EditPostModal from './EditPostModal';
+import CommentsModal from './CommentsModal';
 import axios from 'axios';
 
 export interface IPostBox {
   _id: string;
   title: string;
   content: string;
-  likes: string[]; // Updated to be an array of strings
+  likes: string[];
   user: {
     name: string;
     avatar: string;
@@ -26,6 +27,7 @@ interface PostBoxProps {
 const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
   const { token, userId } = useSelector((state: RootState) => state.auth);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isCommentsModalOpen, setCommentsModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.likes.includes(userId || ''));
   const [likes, setLikes] = useState(post.likes.length);
 
@@ -33,8 +35,16 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
     setEditModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseEditModal = () => {
     setEditModalOpen(false);
+  };
+
+  const handleCommentsClick = () => {
+    setCommentsModalOpen(true);
+  };
+
+  const handleCloseCommentsModal = () => {
+    setCommentsModalOpen(false);
   };
 
   const handleLikeClick = async () => {
@@ -129,7 +139,7 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
                 <ThumbUp />
               </IconButton>
             </Badge>
-            <IconButton onClick={() => alert('Commented!')}>
+            <IconButton onClick={handleCommentsClick}>
               <Comment />
             </IconButton>
             {isEditable && (
@@ -173,10 +183,17 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
       {isEditable && (
         <EditPostModal
           open={isEditModalOpen}
-          onClose={handleCloseModal}
+          onClose={handleCloseEditModal}
           post={post}
         />
       )}
+
+      <CommentsModal
+        open={isCommentsModalOpen}
+        onClose={handleCloseCommentsModal}
+        postId={post._id}
+        userToken={token || ''}
+      />
     </div>
   );
 };
