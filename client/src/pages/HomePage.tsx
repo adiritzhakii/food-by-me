@@ -29,7 +29,6 @@ const HomePage: React.FC = () => {
             try {
                 const response = await axios.get('http://localhost:3000/posts');
                 const rawPosts = response.data; // Assuming it's an array
-                console.log("Posts from server:", rawPosts);
 
                 const postPromises = rawPosts.map(async (post: Post) => {
                     const userResponse = await axios.get(
@@ -57,7 +56,6 @@ const HomePage: React.FC = () => {
 
                 const processedPosts = await Promise.all(postPromises);
                 setPosts(processedPosts);
-                console.log("Updated posts:", processedPosts);
             } catch (error) {
                 console.error('Error fetching posts:', error);
             } finally {

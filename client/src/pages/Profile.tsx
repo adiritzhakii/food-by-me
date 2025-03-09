@@ -10,6 +10,9 @@ import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema } 
 import { RootState } from '../store/store';
 import { EditProfile } from '../components/editProfile';
 import axios from 'axios';
+import Pagination from '../components/Pagination';
+
+const POSTS_PER_PAGE = 3;
 
 const Profile: React.FC = () => {
   const { userData, refreshToken, provider, userId, token } = useSelector((state: RootState) => state.auth);
@@ -17,6 +20,8 @@ const Profile: React.FC = () => {
   const [serverLogout] = usePostAuthLogoutMutation();
   const [userPosts, setUserPosts] = useState<IPostBox[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -58,13 +63,19 @@ const Profile: React.FC = () => {
     };
 
     if (userId) fetchUserPosts();
-  }, [userId,userData]);
+  }, [userId, userData]);
 
   const handleLogout = async () => {
     deleteCookieData('user');
     await serverLogout({ body: { refreshToken, provider } });
     dispatch(logout());
     navigate('/login');
+  };
+
+  const totalPages = Math.ceil(userPosts.length / POSTS_PER_PAGE);
+  const currentPosts = userPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   if (!userData) return <Typography sx={{ color: 'white' }}>Loading...</Typography>;
@@ -87,7 +98,16 @@ const Profile: React.FC = () => {
           {loading ? (
             <Typography sx={{ mt: '20px', color: 'white' }}>Loading posts...</Typography>
           ) : userPosts.length > 0 ? (
-            userPosts.map((post) => <PostBox key={post._id} post={post} />)
+            <>
+              {currentPosts.map((post) => <PostBox key={post._id} post={post} isEditable={true} />)}
+              <Box display="flex" justifyContent="center" alignItems="center" mr={"10%"} mt={4} mb={4}>
+              <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+              />
+              </Box>
+            </>
           ) : (
             <Typography variant="h1" sx={{ mt: '20px', color: 'white' }}>No posts yet! 😢</Typography>
           )}
