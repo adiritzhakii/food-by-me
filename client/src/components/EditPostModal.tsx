@@ -50,6 +50,18 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/posts/${post._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      console.log('Post deleted');
+      onClose();
+    } catch (error: any) {
+      alert(`Delete failed: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -167,6 +179,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
             <Button variant="outlined" onClick={onClose}>
               Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+            >
+              Delete
             </Button>
             <Button
               variant="contained"
