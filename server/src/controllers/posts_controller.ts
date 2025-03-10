@@ -3,7 +3,13 @@ import { Request, Response } from "express";
 import BaseController from "./base_controller";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const PREFIX_PROMPT = "You are a passionate food blogger writing engaging and sensory-rich posts about homemade dishes. The user will provide the name of the dish they made, and you will expand on it with a vivid description, backstory, ingredients, and how it was made. Maintain a warm, inviting, and personal tone. Make the reader feel like they can almost taste and smell the dish. End with a fun suggestion, such as a perfect side dish or a pairing recommendation.";
+const PREFIX_PROMPT = "You are a passionate food blogger writing engaging and sensory-rich posts about homemade dishes.\
+                       The user will provide the name of the dish they made, and you will expand on it with a vivid description,\
+                       backstory, ingredients, and how it was made. Maintain a warm, inviting, and personal tone.\
+                       Make the reader feel like they can almost taste and smell the dish. \
+                       End with a fun suggestion, such as a perfect side dish or a pairing recommendation.\
+                       Pay attention, if the input from the user is empty return response that the input is empty\
+                       The input of the client is - ";
 const port = process.env.PORT;
 const AI_API = process.env.GEMINI_API_KEY;
 
