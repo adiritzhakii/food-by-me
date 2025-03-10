@@ -24,6 +24,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [buttonEnable, setButtonEnable] = useState<Boolean>(false)
 
   const handleGenerateAIPost = async () => {
     const genrateAIData = {
@@ -144,7 +145,14 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             rows={1}
             placeholder="Post Title"
             value={postTitle}
-            onChange={(e) => setPostTitle(e.target.value)}
+            onChange={(e) => {
+              if(e.target.value.length >= 5){
+                setButtonEnable(true);
+              }else{
+                setButtonEnable(false)
+              }
+              setPostTitle(e.target.value)
+            }}
             variant="outlined"
             sx={{ marginBottom: '24px' }}
           />
@@ -212,7 +220,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 },
               }}
               onClick={handlePostSubmit}
-              disabled={!postContent && !previewImage}
+              disabled={!buttonEnable && !postContent && !previewImage}
             >
               Post
             </Button>

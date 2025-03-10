@@ -1,9 +1,9 @@
 import { Box, TextField, Button, Switch } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserProfile, setUserData } from '../store/authSlice';
 import { RootState } from '../store/store';
-import { usePostAuthEditProfileMutation,usePostAuthSetAvatarMutation, ProviderSchema } from '../store/serverApi'
+import { usePostAuthEditProfileMutation, ProviderSchema } from '../store/serverApi'
 import axios from 'axios'
 
 interface EditProfileProps {

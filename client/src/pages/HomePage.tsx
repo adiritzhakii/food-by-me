@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import Posts, { IPostBox } from '../components/PostBox';
+import { IPostBox } from '../components/PostBox';
 import { RootState } from '../store/store';
 import axios from 'axios';
 import PostBox from '../components/PostBox';
 import Pagination from '../components/Pagination';
 import { Box } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setPosts } from '../store/postsSlice'
 
 type Post = {
     _id: string;
@@ -20,7 +22,8 @@ const POSTS_PER_PAGE = 3;
 
 const HomePage: React.FC = () => {
     const { token } = useSelector((state: RootState) => state.auth);
-    const [posts, setPosts] = useState<IPostBox[]>([]);
+    const dispatch = useDispatch();
+    const { posts } = useSelector((state: RootState) => state.posts)
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -55,7 +58,8 @@ const HomePage: React.FC = () => {
                 });
 
                 const processedPosts = await Promise.all(postPromises);
-                setPosts(processedPosts);
+                dispatch(setPosts(processedPosts));
+                // setPosts(processedPosts);
             } catch (error) {
                 console.error('Error fetching posts:', error);
             } finally {
@@ -64,7 +68,7 @@ const HomePage: React.FC = () => {
         };
 
         fetchPosts();
-    }, [token]);
+    }, [posts]);
 
     const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
     const currentPosts = posts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
@@ -77,7 +81,7 @@ const HomePage: React.FC = () => {
         <>
             {loading ? (
                 <p>Loading posts...</p>
-            ) : (
+            ) : (posts.length == 0) ? <h1>No Posts Exist</h1> : (
                 <>
                     {currentPosts.map((post) => <PostBox key={post._id} post={post} />)}
                     <Box display="flex" justifyContent="center" alignItems="center" mr={"10%"} mt={4} mb={4}>
