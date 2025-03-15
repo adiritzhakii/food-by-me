@@ -320,7 +320,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
             res.status(404).send("Profile not found");
             return;
         }
-        user.avatar = `https://${externalServerApi}:${externalServerPort}/api/public/${imagePath}`
+        user.avatar = `https://${externalServerApi}:${externalServerPort}/api/api/public/${imagePath}`
         user.save();
 
         res.status(200).send({avatar: user.avatar});

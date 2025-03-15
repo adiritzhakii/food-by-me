@@ -30,7 +30,7 @@ class PostController extends BaseController<IPost> {
         const post: IPost = {
             ...req.body,
             owner: userId,
-            picture: `https://${externalServerApi}:${externalServerPort}/api/public/${postImage}`,
+            picture: `https://${externalServerApi}:${externalServerPort}/api/api/public/${postImage}`,
             likes: [],
         };
         req.body = post;
@@ -56,7 +56,7 @@ class PostController extends BaseController<IPost> {
 
         if (req.file) {
             const postImage = req.file.filename;
-            updateData.picture = `https://${externalServerApi}:${externalServerPort}/api/public/${postImage}`;
+            updateData.picture = `https://${externalServerApi}:${externalServerPort}/api/api/public/${postImage}`;
         }
 
         console.log("Update data:", updateData);
