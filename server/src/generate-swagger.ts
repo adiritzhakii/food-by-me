@@ -1,5 +1,7 @@
 import fs from "fs";
 import swaggerJSDoc from "swagger-jsdoc";
+const port = process.env.PORT;
+
 
 // Swagger definition
 const swaggerDefinition = {
@@ -11,7 +13,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:3000",
+      url: `http://localhost:${port}`,
     },
   ],
 };

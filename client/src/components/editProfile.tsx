@@ -5,6 +5,8 @@ import { UserProfile, setUserData } from '../store/authSlice';
 import { RootState } from '../store/store';
 import { usePostAuthEditProfileMutation, ProviderSchema } from '../store/serverApi'
 import axios from 'axios'
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
+
 
 interface EditProfileProps {
     isEditing: boolean,
@@ -32,7 +34,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
             const formData = new FormData();
             formData.append("image", file as File);
             try {
-                const response = await axios.post(`http://localhost:3000/auth/setAvatar?provider=${provider}`, formData, {
+                const response = await axios.post(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/setAvatar?provider=${provider}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
                 });
                 dispatch(setUserData({name: updatedUser.name, avatar: response.data.avatar, email: userData?.email } as UserProfile))

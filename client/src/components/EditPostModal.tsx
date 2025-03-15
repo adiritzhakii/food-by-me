@@ -6,6 +6,7 @@ import { IPostBox } from './PostBox';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { updatePost, deletePost } from '../store/postsSlice';
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
 
 const modalStyle = {
   position: 'absolute',
@@ -42,7 +43,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
     }
 
     try {
-      const response = await axios.put(`http://localhost:3000/posts/${post._id}`, formData, {
+      const response = await axios.put(`http://${SERVER_ADDR}:${SERVER_PORT}/posts/${post._id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
 
@@ -68,7 +69,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3000/posts/${post._id}`, {
+      await axios.delete(`http://${SERVER_ADDR}:${SERVER_PORT}/posts/${post._id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       dispatch(deletePost(post._id));

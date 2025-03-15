@@ -13,6 +13,7 @@ import axios from 'axios';
 import Pagination from '../components/Pagination';
 import { setUserPosts } from '../store/postsSlice';
 import { setActiveTab } from '../store/headerSlice';
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
 
 const POSTS_PER_PAGE = 3;
 
@@ -33,7 +34,7 @@ const Profile: React.FC = () => {
       if (!userId || !token) return;
       
       try {
-        const response = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+        const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts?owner=${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         
@@ -54,10 +55,10 @@ const Profile: React.FC = () => {
     if (!userId || !userData) return;
     
     try {
-      const response = await axios.get(`http://localhost:3000/posts?owner=${userId}`);
+      const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts?owner=${userId}`);
       const rawPosts = response.data;
 
-      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+      const userResponse = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;
