@@ -57,7 +57,6 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       console.log('Post created:', response.data);
-      // Dispatch the new post to Redux store
       dispatch(addPost(response.data));
     } catch (error: any) {
         alert(`Upload failed: ${error.response?.data?.message || error.message}`);
@@ -67,7 +66,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    handleClose(); // Close the modal after submission
+    handleClose();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,23 +126,23 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             <Box
             sx={{
                 display: 'flex',
-                justifyContent: 'center', // Center the button horizontally
+                justifyContent: 'center',
                 marginBottom: '24px',
             }}
             >
             <Button
                 variant="contained"
                 sx={{
-                backgroundColor: '#6a0dad', // Purple button
+                backgroundColor: '#6a0dad',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 '&:hover': {
-                    backgroundColor: '#5e0cbe', // Slightly darker purple on hover
+                    backgroundColor: '#5e0cbe',
                 },
                 }}
-                onClick={handleGenerateAIPost} // Replace with actual functionality
+                onClick={handleGenerateAIPost}
             >
                 <RestartAltIcon />
                 Post with AI
@@ -224,9 +223,9 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             <Button
               variant="contained"
               sx={{
-                backgroundColor: '#6a0dad', // Purple button
+                backgroundColor: '#6a0dad',
                 '&:hover': {
-                  backgroundColor: '#5e0cbe', // Slightly darker purple on hover
+                  backgroundColor: '#5e0cbe',
                 },
               }}
               onClick={handlePostSubmit}

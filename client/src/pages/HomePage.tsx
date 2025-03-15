@@ -57,7 +57,6 @@ const HomePage: React.FC = () => {
             });
 
             const processedPosts = await Promise.all(postPromises);
-            // Sort posts by newest first (assuming _id contains timestamp)
             const sortedPosts = processedPosts.sort((a: IPostBox, b: IPostBox) => {
                 return b._id.localeCompare(a._id);
             });
@@ -69,12 +68,10 @@ const HomePage: React.FC = () => {
         }
     };
 
-    // Initial fetch
     useEffect(() => {
         fetchPosts();
     }, [token]);
 
-    // Re-fetch when posts change or when returning to the page
     useEffect(() => {
         const handleFocus = () => {
             fetchPosts();
@@ -86,7 +83,6 @@ const HomePage: React.FC = () => {
         };
     }, [token]);
 
-    // Re-fetch when posts array changes (new post added, edited, or deleted)
     useEffect(() => {
         if (posts.some(post => !post.user?.name || !post.user?.avatar)) {
             fetchPosts();

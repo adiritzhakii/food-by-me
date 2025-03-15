@@ -17,7 +17,6 @@ const headerSlice = createSlice({
   initialState,
   reducers: {
     setActiveTab: (state, action: PayloadAction<tabType>) => {
-      // If switching to a modal tab (newPost or AIPost), store the current tab
       if (action.payload === 'newPost' || action.payload === 'AIPost') {
         state.previousTab = state.activeTab;
       }

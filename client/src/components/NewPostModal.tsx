@@ -45,13 +45,11 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       
-      // Get user data to ensure we have the latest information
       const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;
 
-      // Create the post object with the correct user information
       const newPost = {
         ...response.data,
         user: {

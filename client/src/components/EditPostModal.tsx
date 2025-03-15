@@ -46,13 +46,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
         headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
 
-      // Get user data to ensure we have the latest information
       const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;
 
-      // Create the updated post object with the correct user information
       const updatedPost = {
         ...response.data,
         user: {
@@ -121,9 +119,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
           <IconButton
             onClick={onClose}
             sx={{
-              color: 'red', // Set the icon color to red
+              color: 'red',
               '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Optional hover effect for the button
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
               },
             }}
           >

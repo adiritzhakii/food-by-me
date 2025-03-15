@@ -23,7 +23,6 @@ const Login = () => {
       setError('Please fill in both fields.')
       return
     }
-    // Handle login logic here
     await serverLogin({user: {email, password}})
   }
   

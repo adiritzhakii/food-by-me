@@ -42,7 +42,6 @@ const Profile: React.FC = () => {
       const response = await axios.get(`http://localhost:3000/posts?owner=${userId}`);
       const rawPosts = response.data;
 
-      // Get user data first
       const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -60,7 +59,6 @@ const Profile: React.FC = () => {
         },
       }));
 
-      // Sort posts by newest first (assuming _id contains timestamp)
       const sortedPosts = processedPosts.sort((a: IPostBox, b: IPostBox) => {
         return b._id.localeCompare(a._id);
       });
@@ -73,12 +71,10 @@ const Profile: React.FC = () => {
     }
   };
 
-  // Initial fetch when component mounts and when user data changes
   useEffect(() => {
     fetchUserPosts();
   }, [userId, userData, token]);
 
-  // Re-fetch when returning to the profile page
   useEffect(() => {
     const handleFocus = () => {
       fetchUserPosts();
@@ -90,7 +86,6 @@ const Profile: React.FC = () => {
     };
   }, [userId, userData, token]);
 
-  // Re-fetch when userPosts array changes (new post added, edited, or deleted)
   useEffect(() => {
     if (userPosts.some(post => !post.user?.name || !post.user?.avatar)) {
       fetchUserPosts();
