@@ -72,12 +72,12 @@ const Profile: React.FC = () => {
     }
   };
 
-  // Fetch posts when component mounts and when user data changes
+  // Initial fetch when component mounts and when user data changes
   useEffect(() => {
     fetchUserPosts();
   }, [userId, userData, token]);
 
-  // Re-fetch posts when returning to the profile page
+  // Re-fetch when returning to the profile page
   useEffect(() => {
     const handleFocus = () => {
       fetchUserPosts();
@@ -88,6 +88,13 @@ const Profile: React.FC = () => {
       window.removeEventListener('focus', handleFocus);
     };
   }, [userId, userData, token]);
+
+  // Re-fetch when userPosts array changes (new post added, edited, or deleted)
+  useEffect(() => {
+    if (userPosts.some(post => !post.user?.name || !post.user?.avatar)) {
+      fetchUserPosts();
+    }
+  }, [userPosts]);
 
   const handleLogout = async () => {
     deleteCookieData('user');
