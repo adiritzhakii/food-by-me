@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./.mongodb/:/data/db
+  # server:
+  #   image: food-by-me
+  #   restart: "unless-stopped"
+  #   environment:
+  #     - DB_CONNECTION=mongodb://mongodb:27017/foodbyme
+  #     - PORT=4000
+  #     - SERVER_API=0.0.0.0
+  #     - TOKEN_SECRET=3c5d812d3e30e9544e71a58174f52d3158d930323176052ab5f835bd93296db193894ec4a7355bcaa0a9c5fc05e36efab31a1a08ad5810d63b8e3b60c6c2638c
+  #     - TOKEN_EXPIRE=1h
+  #     - REFRESH_TOKEN_EXPIRE=7d
+  #     - GEMINI_API_KEY=AIzaSyB6H35rqwmROJ0imUPADRfNpVwvJ90_uTg
+  #   ports:
+  #     - '4000:4000'
