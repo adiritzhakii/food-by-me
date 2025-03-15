@@ -30,12 +30,12 @@ const HomePage: React.FC = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/posts`);
+            const response = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/posts`);
             const rawPosts = response.data;
 
             const postPromises = rawPosts.map(async (post: Post) => {
                 const userResponse = await axios.get(
-                    `http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${post.owner}`,
+                    `https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${post.owner}`,
                     {
                         headers: {
                             'Content-Type': 'application/json',

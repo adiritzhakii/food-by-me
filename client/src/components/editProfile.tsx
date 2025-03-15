@@ -33,7 +33,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
             const formData = new FormData();
             formData.append("image", file as File);
             try {
-                const response = await axios.post(`http://${SERVER_API}:${SERVER_PORT}/auth/setAvatar?provider=${provider}`, formData, {
+                const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/auth/setAvatar?provider=${provider}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
                 });
                 dispatch(setUserData({name: updatedUser.name, avatar: response.data.avatar, email: userData?.email } as UserProfile))

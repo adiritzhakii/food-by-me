@@ -4,7 +4,7 @@ import { SERVER_API, SERVER_PORT } from '../consts';
 
 export const emptySplitApi = createApi({
   baseQuery: fetchBaseQuery({ 
-    baseUrl: `http://${SERVER_API}:${SERVER_PORT}/`,
+    baseUrl: `https://${SERVER_API}:${SERVER_PORT}/api/`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
     
