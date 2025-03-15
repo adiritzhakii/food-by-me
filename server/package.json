@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "cp .env_dev .env && nodemon ./src/app.ts",
     "start": "cp .env_dev .env && tsc && node ./dist/src/app.js",
+    "build": "cp .env_dev .env && tsc",
     "test": "cp .env_test .env && jest --detectOpenHandles --forceExit --runInBand --coverage",
     "testAuth": "cp .env_test .env && jest --detectOpenHandles --forceExit auth.test.ts",
     "testPosts": "cp .env_test .env && jest --detectOpenHandles --forceExit posts.test.ts",

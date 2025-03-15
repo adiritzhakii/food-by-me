@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router';
 import { setCookie } from '../utils/cookie';
 import { useDispatch, UseDispatch } from 'react-redux';
 import { login } from '../store/authSlice';
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
+
 
 interface oauthGoogleProps {
   route: 'login' | 'register';
@@ -20,7 +22,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
     if (route === 'login') {
       // Send the token to the login route
         try {
-          const res = await fetch('http://localhost:3000/auth/oauth-login', {
+          const res = await fetch(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/oauth-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential: credentialResponse.credential }),
@@ -37,7 +39,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
     } else if (route === 'register') {
       // Send the token to the register route
       try {
-        const res = await fetch('http://localhost:3000/auth/oauth-register', {
+        const res = await fetch(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/oauth-register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ credential: credentialResponse.credential }),

@@ -11,6 +11,7 @@ import { RootState } from '../store/store';
 import { EditProfile } from '../components/editProfile';
 import axios from 'axios';
 import Pagination from '../components/Pagination';
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
 
 const POSTS_PER_PAGE = 3;
 
@@ -36,7 +37,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/posts?owner=${userId}`);
+        const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts?owner=${userId}`);
         const rawPosts = response.data;
 
         const postPromises = rawPosts.map(async (post: any) => {

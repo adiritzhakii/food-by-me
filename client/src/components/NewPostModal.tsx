@@ -4,6 +4,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { RootState } from '../store/store';
+import {SERVER_ADDR, SERVER_PORT} from '../../const'
+
 
 const modalStyle = {
   position: 'absolute',
@@ -33,7 +35,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     };
 
     try {
-      const response = await axios.post(`http://localhost:3000/posts`, postData, {
+      const response = await axios.post(`http://${SERVER_ADDR}:${SERVER_PORT}/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       console.log('Post created:', response.data);
