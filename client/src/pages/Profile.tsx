@@ -135,7 +135,7 @@ const Profile: React.FC = () => {
       </IconButton>
 
       <Avatar alt="Profile Picture" src={userData.avatar} sx={{ width: 100, height: 100, margin: '16px auto' }} />
-      <Typography variant="h4" sx={{ color: 'white' }}>Hi {userData.name || userData.email}</Typography>
+      <Typography variant="h4" sx={{ color: 'white' }}>{userData.name || userData.email}</Typography>
 
       {!isEditing ? (
         <>

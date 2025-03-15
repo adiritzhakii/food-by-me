@@ -13,7 +13,8 @@ const PREFIX_PROMPT = "You are a passionate food blogger writing engaging and se
                        Pay attention, if the input from the user is empty return response that the input is empty.\
                        if the input from the user is not about food, return response that the input is not about food.\
                        The input of the client is - ";
-const port = process.env.PORT;
+const externalServerPort = process.env.EXTERNAL_SERVER_PORT;
+const externalServerApi = process.env.EXTERNAL_SERVER_API;
 const AI_API = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI(AI_API as string);
@@ -29,7 +30,7 @@ class PostController extends BaseController<IPost> {
         const post: IPost = {
             ...req.body,
             owner: userId,
-            picture: `http://localhost:${port}/api/public/${postImage}`,
+            picture: `https://${externalServerApi}:${externalServerPort}/api/public/${postImage}`,
             likes: [],
         };
         req.body = post;
@@ -55,7 +56,7 @@ class PostController extends BaseController<IPost> {
 
         if (req.file) {
             const postImage = req.file.filename;
-            updateData.picture = `http://localhost:${port}/api/public/${postImage}`;
+            updateData.picture = `https://${externalServerApi}:${externalServerPort}/api/public/${postImage}`;
         }
 
         console.log("Update data:", updateData);
