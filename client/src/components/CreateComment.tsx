@@ -18,7 +18,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({ postId, token, onCreate }
     if (comment.trim()) {
       try {
         const response = await axios.post(
-          `http://${SERVER_API}:${SERVER_PORT}/comments`,
+          `https://${SERVER_API}:${SERVER_PORT}/api/comments`,
           { postId, comment },
           {
             headers: {

@@ -35,7 +35,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/comments?postId=${postId}`, {
+        const response = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/comments?postId=${postId}`, {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
@@ -44,7 +44,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
 
         const enrichedComments = await Promise.all(
           commentsData.map(async (comment: IComments) => {
-            const userResponse = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${comment.owner}`, {
+            const userResponse = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${comment.owner}`, {
               headers: {
                 Authorization: `Bearer ${userToken}`,
               },
@@ -84,7 +84,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
 
   const handleCreateComment = async (newComment: IComments) => {
     try {
-      const userResponse = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${newComment.owner}`, {
+      const userResponse = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${newComment.owner}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },

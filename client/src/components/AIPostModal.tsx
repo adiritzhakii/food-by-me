@@ -39,7 +39,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     const genrateAIData = {
       prompt: postTitle
     }
-    const response = await axios.post(`http://${SERVER_API}:${SERVER_PORT}/posts/generate`, genrateAIData, {
+    const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts/generate`, genrateAIData, {
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       });
     setPostContent(response.data.text)
@@ -54,7 +54,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     };
 
     try {
-      const response = await axios.post(`http://${SERVER_API}:${SERVER_PORT}/posts`, postData, {
+      const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       console.log('Post created:', response.data);

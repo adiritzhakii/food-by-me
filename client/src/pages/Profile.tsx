@@ -34,7 +34,7 @@ const Profile: React.FC = () => {
       if (!userId || !token) return;
       
       try {
-        const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${userId}`, {
+        const response = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         
@@ -55,10 +55,10 @@ const Profile: React.FC = () => {
     if (!userId || !userData) return;
     
     try {
-      const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/posts?owner=${userId}`);
+      const response = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/posts?owner=${userId}`);
       const rawPosts = response.data;
 
-      const userResponse = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${userId}`, {
+      const userResponse = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;

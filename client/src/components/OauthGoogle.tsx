@@ -19,7 +19,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     if (route === 'login') {
         try {
-          const res = await fetch(`http://${SERVER_API}:${SERVER_PORT}/auth/oauth-login`, {
+          const res = await fetch(`https://${SERVER_API}:${SERVER_PORT}/api/auth/oauth-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential: credentialResponse.credential }),
@@ -35,7 +35,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
 
     } else if (route === 'register') {
       try {
-        const res = await fetch(`http://${SERVER_API}:${SERVER_PORT}/auth/oauth-register`, {
+        const res = await fetch(`https://${SERVER_API}:${SERVER_PORT}/api/auth/oauth-register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ credential: credentialResponse.credential }),
