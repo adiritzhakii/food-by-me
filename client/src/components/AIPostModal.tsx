@@ -3,8 +3,10 @@ import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/mate
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
+import { addPost } from '../store/postsSlice';
+import { restorePreviousTab } from '../store/headerSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -19,12 +21,18 @@ const modalStyle = {
 };
 
 const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { token } = useSelector((state: RootState) => state.auth); 
+  const { token } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [buttonEnable, setButtonEnable] = useState<Boolean>(false)
+
+  const handleClose = () => {
+    dispatch(restorePreviousTab());
+    onClose();
+  };
 
   const handleGenerateAIPost = async () => {
     const genrateAIData = {
@@ -49,6 +57,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       console.log('Post created:', response.data);
+      dispatch(addPost(response.data));
     } catch (error: any) {
         alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
@@ -57,7 +66,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    onClose(); // Close the modal after submission
+    handleClose();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +82,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onClose={handleClose}>
       <Box sx={modalStyle}>
         {/* Title Bar */}
         <Box
@@ -99,7 +108,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             🤖 Add New AI Post
           </Typography>
           <IconButton
-            onClick={onClose}
+            onClick={handleClose}
             sx={{
               color: 'red',
               '&:hover': {
@@ -117,23 +126,23 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             <Box
             sx={{
                 display: 'flex',
-                justifyContent: 'center', // Center the button horizontally
+                justifyContent: 'center',
                 marginBottom: '24px',
             }}
             >
             <Button
                 variant="contained"
                 sx={{
-                backgroundColor: '#6a0dad', // Purple button
+                backgroundColor: '#6a0dad',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 '&:hover': {
-                    backgroundColor: '#5e0cbe', // Slightly darker purple on hover
+                    backgroundColor: '#5e0cbe',
                 },
                 }}
-                onClick={handleGenerateAIPost} // Replace with actual functionality
+                onClick={handleGenerateAIPost}
             >
                 <RestartAltIcon />
                 Post with AI
@@ -208,15 +217,15 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
             <Button
               variant="contained"
               sx={{
-                backgroundColor: '#6a0dad', // Purple button
+                backgroundColor: '#6a0dad',
                 '&:hover': {
-                  backgroundColor: '#5e0cbe', // Slightly darker purple on hover
+                  backgroundColor: '#5e0cbe',
                 },
               }}
               onClick={handlePostSubmit}

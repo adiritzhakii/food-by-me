@@ -4,10 +4,12 @@ import { getCookieData } from '../utils/cookie';
 export type tabType = 'newPost' | 'home' | 'profile' | 'AIPost';
 interface HeaderState {
     activeTab: tabType;
-  }
+    previousTab: tabType;
+}
 
 const initialState: HeaderState = {
     activeTab: 'home',
+    previousTab: 'home',
 };
 
 const headerSlice = createSlice({
@@ -15,10 +17,16 @@ const headerSlice = createSlice({
   initialState,
   reducers: {
     setActiveTab: (state, action: PayloadAction<tabType>) => {
+      if (action.payload === 'newPost' || action.payload === 'AIPost') {
+        state.previousTab = state.activeTab;
+      }
       state.activeTab = action.payload;
+    },
+    restorePreviousTab: (state) => {
+      state.activeTab = state.previousTab;
     },
   },
 });
 
-export const { setActiveTab } = headerSlice.actions;
+export const { setActiveTab, restorePreviousTab } = headerSlice.actions;
 export default headerSlice.reducer;

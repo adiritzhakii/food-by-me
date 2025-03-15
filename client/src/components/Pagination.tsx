@@ -14,21 +14,21 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     '& .MuiPaginationItem-root': {
-                        fontSize: '1.2rem', // Increase font size
-                        color: 'white', // Change text color to white
+                        fontSize: '1.2rem',
+                        color: 'white',
                     },
                     '& .MuiPaginationItem-ellipsis': {
-                        color: 'white', // Change ellipsis color to white
+                        color: 'white', 
                     },
                     '& .MuiPaginationItem-icon': {
-                        color: 'white', // Change arrow color to white
+                        color: 'white',
                     },
                     '& .Mui-selected': {
-                        backgroundColor: '#1976d2', // Change selected background color
-                        color: 'white', // Change selected text color to white
+                        backgroundColor: '#1976d2',
+                        color: 'white',
                     },
                     '& .MuiPaginationItem-root.Mui-disabled': {
-                        color: 'gray', // Change disabled color
+                        color: 'gray',
                     },
                 },
             },
@@ -53,21 +53,21 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     showLastButton
                     sx={{
                         '& .MuiPaginationItem-root': {
-                            fontSize: '1.2rem', // Increase font size
-                            color: 'white', // Change text color to white
+                            fontSize: '1.2rem',
+                            color: 'white',
                         },
                         '& .MuiPaginationItem-ellipsis': {
-                            color: 'white', // Change ellipsis color to white
+                            color: 'white',
                         },
                         '& .MuiPaginationItem-icon': {
-                            color: 'white', // Change arrow color to white
+                            color: 'white',
                         },
                         '& .Mui-selected': {
-                            backgroundColor: '#1976d2', // Change selected background color
-                            color: 'white', // Change selected text color to white
+                            backgroundColor: '#1976d2',
+                            color: 'white',
                         },
                         '& .MuiPaginationItem-root.Mui-disabled': {
-                            color: 'gray', // Change disabled color
+                            color: 'gray',
                         },
                     }}
                 />

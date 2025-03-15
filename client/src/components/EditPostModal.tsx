@@ -3,8 +3,9 @@ import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/mate
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { IPostBox } from './PostBox';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
+import { updatePost, deletePost } from '../store/postsSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -25,7 +26,8 @@ interface EditPostModalProps {
 }
 
 const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) => {
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, userId } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const [title, setTitle] = useState(post.title);
   const [content, setContent] = useState(post.content);
   const [image, setImage] = useState<File | null>(null);
@@ -43,7 +45,21 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
       const response = await axios.put(`http://localhost:3000/posts/${post._id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post updated:', response.data);
+
+      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const userInfo = userResponse.data;
+
+      const updatedPost = {
+        ...response.data,
+        user: {
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+        }
+      };
+
+      dispatch(updatePost(updatedPost));
       onClose();
     } catch (error: any) {
       alert(`Update failed: ${error.response?.data?.message || error.message}`);
@@ -55,7 +71,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
       await axios.delete(`http://localhost:3000/posts/${post._id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post deleted');
+      dispatch(deletePost(post._id));
       onClose();
     } catch (error: any) {
       alert(`Delete failed: ${error.response?.data?.message || error.message}`);
@@ -103,9 +119,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
           <IconButton
             onClick={onClose}
             sx={{
-              color: 'red', // Set the icon color to red
+              color: 'red',
               '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Optional hover effect for the button
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
               },
             }}
           >
