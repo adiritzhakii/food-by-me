@@ -27,13 +27,28 @@ const Profile: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { data } = useGetAuthGetProfileQuery({ provider: provider as ProviderSchema });
-
+  // Fetch user profile data
   useEffect(() => {
-    if (data) {
-      dispatch(setUserData(data));
-    }
-  }, [data]);
+    const fetchUserProfile = async () => {
+      if (!userId || !token) return;
+      
+      try {
+        const response = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        
+        dispatch(setUserData({
+          name: response.data.name,
+          email: response.data.email,
+          avatar: response.data.avatar
+        }));
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId, token, dispatch]);
 
   const fetchUserPosts = async () => {
     if (!userId || !userData) return;
