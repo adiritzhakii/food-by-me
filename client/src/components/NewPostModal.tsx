@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { RootState } from '../store/store';
 import { addPost } from '../store/postsSlice';
+import { restorePreviousTab } from '../store/headerSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -26,6 +27,11 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const handleClose = () => {
+    dispatch(restorePreviousTab());
+    onClose();
+  };
 
   const handlePostSubmit = async () => {
     const postData = {
@@ -63,7 +69,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    onClose();
+    handleClose();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +85,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onClose={handleClose}>
       <Box sx={modalStyle}>
         {/* Title Bar */}
         <Box
@@ -105,7 +111,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             🍔 Add New Post
           </Typography>
           <IconButton
-            onClick={onClose}
+            onClick={handleClose}
             sx={{
                 color: 'red',
                 '&:hover': {
@@ -181,7 +187,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
             <Button

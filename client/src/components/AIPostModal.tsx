@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { addPost } from '../store/postsSlice';
+import { restorePreviousTab } from '../store/headerSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -27,6 +28,11 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [buttonEnable, setButtonEnable] = useState<Boolean>(false)
+
+  const handleClose = () => {
+    dispatch(restorePreviousTab());
+    onClose();
+  };
 
   const handleGenerateAIPost = async () => {
     const genrateAIData = {
@@ -61,7 +67,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    onClose(); // Close the modal after submission
+    handleClose(); // Close the modal after submission
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +83,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onClose={handleClose}>
       <Box sx={modalStyle}>
         {/* Title Bar */}
         <Box
@@ -103,7 +109,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             🤖 Add New AI Post
           </Typography>
           <IconButton
-            onClick={onClose}
+            onClick={handleClose}
             sx={{
               color: 'red',
               '&:hover': {
@@ -212,7 +218,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
             <Button

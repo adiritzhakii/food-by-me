@@ -12,6 +12,7 @@ import { EditProfile } from '../components/editProfile';
 import axios from 'axios';
 import Pagination from '../components/Pagination';
 import { setUserPosts } from '../store/postsSlice';
+import { setActiveTab } from '../store/headerSlice';
 
 const POSTS_PER_PAGE = 3;
 
@@ -100,6 +101,7 @@ const Profile: React.FC = () => {
     deleteCookieData('user');
     await serverLogout({ body: { refreshToken, provider } });
     dispatch(logout());
+    dispatch(setActiveTab('home'));
     navigate('/login');
   };
 
