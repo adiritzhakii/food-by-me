@@ -7,9 +7,8 @@ import PostBox from '../components/PostBox';
 import Pagination from '../components/Pagination';
 import { Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { setPosts } from '../store/postsSlice'
-import {SERVER_ADDR, SERVER_PORT} from '../../const'
-
+import { setPosts } from '../store/postsSlice';
+import {SERVER_ADDR, SERVER_PORT} from '../../const';
 
 type Post = {
     _id: string;
@@ -25,12 +24,11 @@ const POSTS_PER_PAGE = 3;
 const HomePage: React.FC = () => {
     const { token } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch();
-    const { posts } = useSelector((state: RootState) => state.posts)
+    const { posts } = useSelector((state: RootState) => state.posts);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
 
-    useEffect(() => {
-      const fetchPosts = async () => {
+    const fetchPosts = async () => {
         try {
             const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts`);
             const rawPosts = response.data;
@@ -103,9 +101,13 @@ const HomePage: React.FC = () => {
         <>
             {loading ? (
                 <p>Loading posts...</p>
-            ) : (posts.length == 0) ? <h1>No Posts Exist</h1> : (
+            ) : (posts.length === 0) ? (
+                <h1>No Posts Exist</h1>
+            ) : (
                 <>
-                    {currentPosts.map((post) => <PostBox key={post._id} post={post} />)}
+                    {currentPosts.map((post) => (
+                        <PostBox key={post._id} post={post} />
+                    ))}
                     <Box display="flex" justifyContent="center" alignItems="center" mr={"10%"} mt={4} mb={4}>
                         <Pagination
                             currentPage={currentPage}
