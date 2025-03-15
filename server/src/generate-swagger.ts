@@ -1,9 +1,12 @@
 import fs from "fs";
 import swaggerJSDoc from "swagger-jsdoc";
+import dotenv from "dotenv";
+dotenv.config();
 const port = process.env.PORT;
 
 
 // Swagger definition
+console.log(port)
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
@@ -13,7 +16,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:${port}`,
+      url: `http://0.0.0.0:${port}`,
     },
   ],
 };

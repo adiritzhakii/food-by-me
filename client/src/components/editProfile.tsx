@@ -3,23 +3,16 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserProfile, setUserData } from '../store/authSlice';
 import { RootState } from '../store/store';
-import { usePostAuthEditProfileMutation, ProviderSchema } from '../store/serverApi'
 import axios from 'axios'
 import {SERVER_ADDR, SERVER_PORT} from '../../const'
 
 
 interface EditProfileProps {
-    isEditing: boolean,
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function asyncSetTimeout(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
-    const [isUploadEnabled, setIsUploadEnabled] = useState<boolean>(false)
+export const EditProfile = ({setIsEditing}: EditProfileProps) => {
     const [file, setFile] = useState<File | undefined>(undefined) 
-    const [editProfile , {data}]  = usePostAuthEditProfileMutation();
     const { userData, provider,token } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch()
     const [updatedUser, setUpdatedUser] = useState<UserProfile>(userData ? userData : {email: '', name: '', avatar: ''});
@@ -29,26 +22,33 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
         }
       };
       const handleSaveClick = async () => {
-        if (updatedUser.name && file){
-            editProfile({provider: provider as ProviderSchema, body: {name: updatedUser.name}})
-            const formData = new FormData();
-            formData.append("image", file as File);
-            try {
-                const response = await axios.post(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/setAvatar?provider=${provider}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
-                });
-                dispatch(setUserData({name: updatedUser.name, avatar: response.data.avatar, email: userData?.email } as UserProfile))
-            } catch (error: any) {
-                alert(`Upload failed: ${error.response?.data?.message || error.message}`);
-            }
+        try {
+            if(updatedUser.name){
+              const res = await axios.post(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/editProfile?provider=${provider}`, {name: updatedUser.name}, {
+                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              });
+            dispatch(setUserData({ ...userData, name: updatedUser.name } as UserProfile))
 
-        }
-        if(updatedUser.name && updatedUser.avatar && !isUploadEnabled){
-            dispatch(setUserData({name: updatedUser.name, avatar: updatedUser.avatar, email: userData?.email } as UserProfile))
-            editProfile({provider: provider as ProviderSchema, body: {name: updatedUser.name, avatar: updatedUser.avatar}})
+            }
+            if(file){
+              const formData = new FormData();
+              formData.append("image", file as File);
+              const response = await axios.post(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/setAvatar?provider=${provider}`, formData, {
+                  headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
+              });
+              if(updatedUser.name){
+                dispatch(setUserData({...userData, avatar: response.data.avatar, name: updatedUser.name } as UserProfile))
+              }else{
+                dispatch(setUserData({...userData, avatar: response.data.avatar} as UserProfile))
+              }
+
+            }
+        } catch (error: any) {
+            alert(`Upload failed: ${error.response?.data?.message || error.message}`);
         }
         setIsEditing(false);
       };
+
       const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const fileToUpload = event.target.files?.[0];
         if(fileToUpload){
@@ -78,42 +78,14 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
           />
 
           {/* Avatar URL and Upload Section with Switch */}
-          <Box display="flex" alignItems="center" gap={2}>
-            {/* Avatar URL */}
-            <TextField
-              label="Avatar URL"
-              value={updatedUser?.avatar || userData?.avatar}
-              onChange={(e) => handleChange('avatar', e.target.value)}
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ style: { color: 'black' } }}
-              InputProps={{ style: { color: 'black' } }}
-              disabled={isUploadEnabled}
-            />
-
-            {/* Toggle Switch */}
-            <Switch
-              checked={isUploadEnabled}
-              onChange={(e) => setIsUploadEnabled(e.target.checked)}
-              sx={{
-                '& .MuiSwitch-switchBase': {
-                  color: '#1E90FF',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1E90FF',
-                },
-                '& .MuiSwitch-track': {
-                  backgroundColor: '#1E90FF',
-                },
-              }}
-            />
+          <Box display="flex" alignItems="center" gap={2}>            
 
             {/* Upload Button */}
             <Button
               variant="outlined"
               component="label"
               sx={{ marginTop: '8px' }}
-              disabled={!isUploadEnabled}
+              // disabled={!isUploadEnabled}
             >
               Upload Image
               <input type="file" hidden onChange={handleImageUpload} />

@@ -11,7 +11,7 @@ import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors";
 import path from 'path';
-import { fileURLToPath } from 'url';
+const serverApi = process.env.SERVER_API;
 
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
@@ -19,7 +19,12 @@ db.once("open", () => console.log("Connected to Database"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: '*', 
+  methods: '*', 
+  allowedHeaders: '*',
+  credentials: true
+}));
 
 app.use("/posts", postsRoute);
 app.use("/auth", authController);
@@ -37,7 +42,7 @@ const options = {
       version: "1.0.0",
       description: "REST server including authentication using JWT",
     },
-    servers: [{ url: "http://localhost:" + process.env.PORT, },],
+    servers: [{ url: `http://${serverApi}:` + process.env.PORT, },],
   },
   apis: ["./src/routes/*.ts"],
 };

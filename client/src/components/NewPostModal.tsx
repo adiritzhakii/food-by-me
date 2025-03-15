@@ -46,7 +46,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       
-      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+      const userResponse = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;

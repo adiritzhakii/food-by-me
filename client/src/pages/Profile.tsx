@@ -6,7 +6,7 @@ import PostBox, { IPostBox } from '../components/PostBox';
 import { deleteCookieData } from '../utils/cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, setUserData } from '../store/authSlice';
-import { usePostAuthLogoutMutation, useGetAuthGetProfileQuery, ProviderSchema } from '../store/serverApi';
+import { usePostAuthLogoutMutation } from '../store/serverApi';
 import { RootState } from '../store/store';
 import { EditProfile } from '../components/editProfile';
 import axios from 'axios';
@@ -34,8 +34,8 @@ const Profile: React.FC = () => {
       if (!userId || !token) return;
       
       try {
-        const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts?owner=${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+        const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/getProfile?provider=${provider}`, {
+          headers: { 'Authorization': `Bearer ${token}`}
         });
         
         dispatch(setUserData({
@@ -158,7 +158,7 @@ const Profile: React.FC = () => {
           )}
         </>
       ) : (
-        <EditProfile isEditing={isEditing} setIsEditing={setIsEditing} />
+        <EditProfile setIsEditing={setIsEditing} />
       )}
     </Box>
   );

@@ -1,6 +1,8 @@
-FROM node:20.13.1-alpine
+FROM node:23-alpine3.20
 
 WORKDIR /app
+
+RUN mkdir -p dist/src/blob-images
 
 COPY package*.json ./
 

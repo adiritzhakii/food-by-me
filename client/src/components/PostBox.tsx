@@ -36,7 +36,7 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
 
   const fetchCommentCount = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/comments?postId=${post._id}`, {
+      const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/comments?postId=${post._id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       setCommentCount(response.data.length);
