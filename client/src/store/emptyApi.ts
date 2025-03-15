@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { RootState } from './store';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
-const serverUrl = window.location.hostname
 export const emptySplitApi = createApi({
   baseQuery: fetchBaseQuery({ 
-    baseUrl: `http://${serverUrl}:3000/`,
+    baseUrl: `http://${SERVER_API}:${SERVER_PORT}/`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
     

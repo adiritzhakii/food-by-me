@@ -6,6 +6,8 @@ import { RootState } from '../store/store';
 import EditPostModal from './EditPostModal';
 import CommentsModal from './CommentsModal';
 import axios from 'axios';
+import {SERVER_API, SERVER_PORT} from '../consts';
+
 
 export interface IPostBox {
   _id: string;
@@ -34,7 +36,7 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
 
   const fetchCommentCount = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/comments?postId=${post._id}`, {
+      const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/comments?postId=${post._id}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       setCommentCount(response.data.length);
@@ -69,7 +71,7 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
 
   const handleLikeClick = async () => {
     try {
-      const response = await axios.post(`http://localhost:3000/posts/${post._id}/like`, {}, {
+      const response = await axios.post(`http://${SERVER_API}:${SERVER_PORT}/posts/${post._id}/like`, {}, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       setIsLiked(!isLiked);

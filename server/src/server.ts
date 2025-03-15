@@ -25,8 +25,6 @@ app.use("/posts", postsRoute);
 app.use("/auth", authController);
 app.use("/comments", commentsRoute);
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 app.use('/api/public', express.static(path.join(__dirname, 'blob-images')));
 
 const options = {
@@ -37,7 +35,7 @@ const options = {
       version: "1.0.0",
       description: "REST server including authentication using JWT",
     },
-    servers: [{ url: "http://localhost:" + process.env.PORT, },],
+    servers: [{ url: "http://0.0.0.0:" + process.env.PORT, },],
   },
   apis: ["./src/routes/*.ts"],
 };

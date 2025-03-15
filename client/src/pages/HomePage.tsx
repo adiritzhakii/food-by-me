@@ -8,6 +8,7 @@ import Pagination from '../components/Pagination';
 import { Box } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { setPosts } from '../store/postsSlice'
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 type Post = {
     _id: string;
@@ -29,12 +30,12 @@ const HomePage: React.FC = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/posts');
+            const response = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/posts`);
             const rawPosts = response.data;
 
             const postPromises = rawPosts.map(async (post: Post) => {
                 const userResponse = await axios.get(
-                    `http://localhost:3000/auth/getUserById/${post.owner}`,
+                    `http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${post.owner}`,
                     {
                         headers: {
                             'Content-Type': 'application/json',

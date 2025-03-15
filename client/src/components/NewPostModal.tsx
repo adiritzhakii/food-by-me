@@ -6,6 +6,7 @@ import axios from 'axios';
 import { RootState } from '../store/store';
 import { addPost } from '../store/postsSlice';
 import { restorePreviousTab } from '../store/headerSlice';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 const modalStyle = {
   position: 'absolute',
@@ -41,11 +42,11 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     };
 
     try {
-      const response = await axios.post(`http://localhost:3000/posts`, postData, {
+      const response = await axios.post(`http://${SERVER_API}:${SERVER_PORT}/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       
-      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+      const userResponse = await axios.get(`http://${SERVER_API}:${SERVER_PORT}/auth/getUserById/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const userInfo = userResponse.data;

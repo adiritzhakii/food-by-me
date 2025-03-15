@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { setCookie } from '../utils/cookie';
 import { useDispatch, UseDispatch } from 'react-redux';
 import { login } from '../store/authSlice';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 interface oauthGoogleProps {
   route: 'login' | 'register';
@@ -18,7 +19,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     if (route === 'login') {
         try {
-          const res = await fetch('http://localhost:3000/auth/oauth-login', {
+          const res = await fetch(`http://${SERVER_API}:${SERVER_PORT}/auth/oauth-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential: credentialResponse.credential }),
@@ -34,7 +35,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
 
     } else if (route === 'register') {
       try {
-        const res = await fetch('http://localhost:3000/auth/oauth-register', {
+        const res = await fetch(`http://${SERVER_API}:${SERVER_PORT}/auth/oauth-register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ credential: credentialResponse.credential }),

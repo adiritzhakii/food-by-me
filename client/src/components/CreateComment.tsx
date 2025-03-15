@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Box, TextField, Button } from '@mui/material';
 import axios from 'axios';
 import { IEnrichedComments } from './CommentsModal';
+import {SERVER_API, SERVER_PORT} from '../consts';
+
 
 interface CreateCommentProps {
     postId: string;
@@ -16,7 +18,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({ postId, token, onCreate }
     if (comment.trim()) {
       try {
         const response = await axios.post(
-          'http://localhost:3000/comments',
+          `http://${SERVER_API}:${SERVER_PORT}/comments`,
           { postId, comment },
           {
             headers: {
