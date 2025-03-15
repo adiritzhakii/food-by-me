@@ -11,14 +11,15 @@ import { RootState } from '../store/store';
 import { EditProfile } from '../components/editProfile';
 import axios from 'axios';
 import Pagination from '../components/Pagination';
+import { setUserPosts } from '../store/postsSlice';
 
 const POSTS_PER_PAGE = 3;
 
 const Profile: React.FC = () => {
   const { userData, refreshToken, provider, userId, token } = useSelector((state: RootState) => state.auth);
+  const userPosts = useSelector((state: RootState) => state.posts.userPosts);
   const [isEditing, setIsEditing] = useState(false);
   const [serverLogout] = usePostAuthLogoutMutation();
-  const [userPosts, setUserPosts] = useState<IPostBox[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -33,37 +34,60 @@ const Profile: React.FC = () => {
     }
   }, [data]);
 
+  const fetchUserPosts = async () => {
+    if (!userId || !userData) return;
+    
+    try {
+      const response = await axios.get(`http://localhost:3000/posts?owner=${userId}`);
+      const rawPosts = response.data;
+
+      // Get user data first
+      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const userInfo = userResponse.data;
+
+      const processedPosts = rawPosts.map((post: any) => ({
+        _id: post._id,
+        title: post.title,
+        content: post.content,
+        likes: post.likes,
+        picture: post.picture || '',
+        user: {
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+        },
+      }));
+
+      // Sort posts by newest first (assuming _id contains timestamp)
+      const sortedPosts = processedPosts.sort((a: IPostBox, b: IPostBox) => {
+        return b._id.localeCompare(a._id);
+      });
+
+      dispatch(setUserPosts(sortedPosts));
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch posts when component mounts and when user data changes
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/posts?owner=${userId}`);
-        const rawPosts = response.data;
+    fetchUserPosts();
+  }, [userId, userData, token]);
 
-        const postPromises = rawPosts.map(async (post: any) => {
-          return {
-            _id: post._id,
-            title: post.title,
-            content: post.content,
-            likes: post.likes,
-            picture: post.picture || '',
-            user: {
-              name: userData?.name || 'Unknown User',
-              avatar: userData?.avatar || 'https://via.placeholder.com/150',
-            },
-          } as IPostBox;
-        });
-
-        const processedPosts = await Promise.all(postPromises);
-        setUserPosts(processedPosts);
-      } catch (error) {
-        console.error('Error fetching user posts:', error);
-      } finally {
-        setLoading(false);
-      }
+  // Re-fetch posts when returning to the profile page
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchUserPosts();
     };
 
-    if (userId) fetchUserPosts();
-  }, [userId, userData]);
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [userId, userData, token]);
 
   const handleLogout = async () => {
     deleteCookieData('user');
@@ -74,6 +98,7 @@ const Profile: React.FC = () => {
 
   const totalPages = Math.ceil(userPosts.length / POSTS_PER_PAGE);
   const currentPosts = userPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+  
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };

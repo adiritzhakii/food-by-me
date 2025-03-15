@@ -3,8 +3,9 @@ import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/mate
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
+import { addPost } from '../store/postsSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -19,7 +20,8 @@ const modalStyle = {
 };
 
 const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { token } = useSelector((state: RootState) => state.auth); 
+  const { token } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
@@ -49,6 +51,8 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
       console.log('Post created:', response.data);
+      // Dispatch the new post to Redux store
+      dispatch(addPost(response.data));
     } catch (error: any) {
         alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     }

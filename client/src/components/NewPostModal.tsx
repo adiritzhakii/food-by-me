@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { RootState } from '../store/store';
+import { addPost } from '../store/postsSlice';
 
 const modalStyle = {
   position: 'absolute',
@@ -18,7 +19,8 @@ const modalStyle = {
 };
 
 const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { token } = useSelector((state: RootState) => state.auth); 
+  const { token, userData, userId } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
 
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
@@ -36,7 +38,23 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
       const response = await axios.post(`http://localhost:3000/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post created:', response.data);
+      
+      // Get user data to ensure we have the latest information
+      const userResponse = await axios.get(`http://localhost:3000/auth/getUserById/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const userInfo = userResponse.data;
+
+      // Create the post object with the correct user information
+      const newPost = {
+        ...response.data,
+        user: {
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+        }
+      };
+
+      dispatch(addPost(newPost));
     } catch (error: any) {
         alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
@@ -45,7 +63,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    onClose(); // Close the modal after submission
+    onClose();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,9 +107,9 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
           <IconButton
             onClick={onClose}
             sx={{
-                color: 'red', // Set the icon color to red
+                color: 'red',
                 '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Optional hover effect for the button
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
                 },
             }}
             >

@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
         const fetchPosts = async () => {
             try {
                 const response = await axios.get('http://localhost:3000/posts');
-                const rawPosts = response.data; // Assuming it's an array
+                const rawPosts = response.data;
 
                 const postPromises = rawPosts.map(async (post: Post) => {
                     const userResponse = await axios.get(
@@ -58,8 +58,11 @@ const HomePage: React.FC = () => {
                 });
 
                 const processedPosts = await Promise.all(postPromises);
-                dispatch(setPosts(processedPosts));
-                // setPosts(processedPosts);
+                // Sort posts by newest first (assuming _id contains timestamp)
+                const sortedPosts = processedPosts.sort((a, b) => {
+                    return b._id.localeCompare(a._id);
+                });
+                dispatch(setPosts(sortedPosts));
             } catch (error) {
                 console.error('Error fetching posts:', error);
             } finally {
@@ -68,7 +71,7 @@ const HomePage: React.FC = () => {
         };
 
         fetchPosts();
-    }, [posts]);
+    }, [token]);
 
     const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
     const currentPosts = posts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
