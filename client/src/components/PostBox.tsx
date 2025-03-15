@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardActions, Typography, IconButton, Avatar, Box, Badge } from '@mui/material';
 import { ThumbUp, Comment, Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
@@ -30,6 +30,22 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
   const [isCommentsModalOpen, setCommentsModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.likes.includes(userId || ''));
   const [likes, setLikes] = useState(post.likes.length);
+  const [commentCount, setCommentCount] = useState(0);
+
+  const fetchCommentCount = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/comments?postId=${post._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      setCommentCount(response.data.length);
+    } catch (error) {
+      console.error('Error fetching comment count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentCount();
+  }, [post._id, token]);
 
   const handleEditClick = () => {
     setEditModalOpen(true);
@@ -45,6 +61,10 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
 
   const handleCloseCommentsModal = () => {
     setCommentsModalOpen(false);
+  };
+
+  const handleCommentUpdate = (newCount: number) => {
+    setCommentCount(newCount);
   };
 
   const handleLikeClick = async () => {
@@ -139,9 +159,11 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
                 <ThumbUp />
               </IconButton>
             </Badge>
-            <IconButton onClick={handleCommentsClick}>
-              <Comment />
-            </IconButton>
+            <Badge badgeContent={commentCount} color="primary">
+              <IconButton onClick={handleCommentsClick}>
+                <Comment />
+              </IconButton>
+            </Badge>
             {isEditable && (
               <IconButton onClick={handleEditClick}>
                 <Edit />
@@ -193,6 +215,7 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
         onClose={handleCloseCommentsModal}
         postId={post._id}
         userToken={token || ''}
+        onCommentUpdate={handleCommentUpdate}
       />
     </div>
   );

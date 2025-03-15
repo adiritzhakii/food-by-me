@@ -24,9 +24,10 @@ interface CommentsModalProps {
   onClose: () => void;
   postId: string;
   userToken: string;
+  onCommentUpdate?: (count: number) => void;
 }
 
-const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, userToken }) => {
+const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, userToken, onCommentUpdate }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [comments, setComments] = useState<IEnrichedComments[]>([]);
 
@@ -59,6 +60,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
         );
 
         setComments(enrichedComments);
+        onCommentUpdate?.(enrichedComments.length);
       } catch (error) {
         console.error('Error fetching comments:', error);
       }
@@ -69,7 +71,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
     } else {
       setComments([]);
     }
-  }, [open, postId, userToken]);
+  }, [open, postId, userToken, onCommentUpdate]);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -94,7 +96,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, postId, us
           name: userData.name,
         },
       };
-      setComments((prevComments) => [...prevComments, enrichedComment]);
+      const updatedComments = [...comments, enrichedComment];
+      setComments(updatedComments);
+      onCommentUpdate?.(updatedComments.length);
     } catch (error) {
       console.error('Error fetching user data for new comment:', error);
     }
