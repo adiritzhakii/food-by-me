@@ -18,9 +18,7 @@ function OauthGoogle({route}: oauthGoogleProps) {
   const dispatch = useDispatch();
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
-    // Send the token to your backend server for verification
     if (route === 'login') {
-      // Send the token to the login route
         try {
           const res = await fetch(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/oauth-login`, {
             method: 'POST',
@@ -37,7 +35,6 @@ function OauthGoogle({route}: oauthGoogleProps) {
         }
 
     } else if (route === 'register') {
-      // Send the token to the register route
       try {
         const res = await fetch(`http://${SERVER_ADDR}:${SERVER_PORT}/auth/oauth-register`, {
           method: 'POST',

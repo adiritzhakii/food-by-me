@@ -24,7 +24,6 @@ const Register = () => {
       return
     }
 
-    // Handle registration logic here
     await serverRegister({user: {name, email, password}})
 
   }

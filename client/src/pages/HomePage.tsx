@@ -30,46 +30,66 @@ const HomePage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts`);
-                const rawPosts = response.data; // Assuming it's an array
+      const fetchPosts = async () => {
+        try {
+            const response = await axios.get(`http://${SERVER_ADDR}:${SERVER_PORT}/posts`);
+            const rawPosts = response.data;
 
-                const postPromises = rawPosts.map(async (post: Post) => {
-                    const userResponse = await axios.get(
-                        `http://${SERVER_ADDR}:${SERVER_PORT}/auth/getUserById/${post.owner}`,
-                        {
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`,
-                            },
-                        }
-                    );
-
-                    return {
-                        _id: post._id,
-                        title: post.title,
-                        content: post.content,
-                        likes: post.likes,
-                        picture: post.picture || '',
-                        user: {
-                            name: userResponse?.data?.name,
-                            avatar: userResponse?.data?.avatar,
+            const postPromises = rawPosts.map(async (post: Post) => {
+                const userResponse = await axios.get(
+                    `http://${SERVER_ADDR}:${SERVER_PORT}/auth/getUserById/${post.owner}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
                         },
-                    } as IPostBox;
-                });
+                    }
+                );
 
-                const processedPosts = await Promise.all(postPromises);
-                dispatch(setPosts(processedPosts));
-                // setPosts(processedPosts);
-            } catch (error) {
-                console.error('Error fetching posts:', error);
-            } finally {
-                setLoading(false);
-            }
+                return {
+                    _id: post._id,
+                    title: post.title,
+                    content: post.content,
+                    likes: post.likes,
+                    picture: post.picture || '',
+                    user: {
+                        name: userResponse?.data?.name,
+                        avatar: userResponse?.data?.avatar,
+                    },
+                } as IPostBox;
+            });
+
+            const processedPosts = await Promise.all(postPromises);
+            const sortedPosts = processedPosts.sort((a: IPostBox, b: IPostBox) => {
+                return b._id.localeCompare(a._id);
+            });
+            dispatch(setPosts(sortedPosts));
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPosts();
+    }, [token]);
+
+    useEffect(() => {
+        const handleFocus = () => {
+            fetchPosts();
         };
 
-        fetchPosts();
+        window.addEventListener('focus', handleFocus);
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, [token]);
+
+    useEffect(() => {
+        if (posts.some(post => !post.user?.name || !post.user?.avatar)) {
+            fetchPosts();
+        }
     }, [posts]);
 
     const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);

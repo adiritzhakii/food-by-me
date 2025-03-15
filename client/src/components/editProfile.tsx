@@ -88,7 +88,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               margin="normal"
               InputLabelProps={{ style: { color: 'black' } }}
               InputProps={{ style: { color: 'black' } }}
-              disabled={isUploadEnabled} // Disable when upload is enabled
+              disabled={isUploadEnabled}
             />
 
             {/* Toggle Switch */}
@@ -97,13 +97,13 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               onChange={(e) => setIsUploadEnabled(e.target.checked)}
               sx={{
                 '& .MuiSwitch-switchBase': {
-                  color: '#1E90FF', // Blue when unchecked
+                  color: '#1E90FF',
                 },
                 '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1E90FF', // Blue when checked
+                  color: '#1E90FF',
                 },
                 '& .MuiSwitch-track': {
-                  backgroundColor: '#1E90FF', // Blue track
+                  backgroundColor: '#1E90FF',
                 },
               }}
             />
@@ -113,7 +113,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               variant="outlined"
               component="label"
               sx={{ marginTop: '8px' }}
-              disabled={!isUploadEnabled} // Disable when URL is enabled
+              disabled={!isUploadEnabled}
             >
               Upload Image
               <input type="file" hidden onChange={handleImageUpload} />

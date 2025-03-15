@@ -29,9 +29,9 @@ const Header = ({
   const handleTabClick = (tab: tabType) => {
     dispatch(setActiveTab(tab));
     if (tab === 'newPost') {
-      onNewPostClick(); // Trigger the New Post Modal
+      onNewPostClick();
     } else if (tab === 'AIPost') {
-      onAIPostClick(); // Trigger the AI Post Modal
+      onAIPostClick();
     } else {
       navigate(`/${tab}`);
     }
