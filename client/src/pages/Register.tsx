@@ -29,7 +29,6 @@ const Register = () => {
   }
   useEffect(() => {
     if(isSuccess){
-      alert('Registered successfully!');
       navigate('/login')
     }},[isSuccess]);
     

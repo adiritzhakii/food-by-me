@@ -61,7 +61,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
       dispatch(addPost(newPost));
     } catch (error: any) {
-        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+        console.log(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
 
     setPostTitle('');

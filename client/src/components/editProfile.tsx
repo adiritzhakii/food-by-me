@@ -38,7 +38,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
                 });
                 dispatch(setUserData({name: updatedUser.name, avatar: response.data.avatar, email: userData?.email } as UserProfile))
             } catch (error: any) {
-                alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+                console.log(`Upload failed: ${error.response?.data?.message || error.message}`);
             }
 
         }

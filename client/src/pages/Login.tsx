@@ -28,7 +28,6 @@ const Login = () => {
   
   useEffect(() => {
     if(isSuccess){
-      alert('Logged in successfully!');
       if(data?.accessToken && data?.refreshToken){
         setCookie({provider: "Local",token: data.accessToken, refreshToken: data.refreshToken, userId: data._id}, 'user');
         dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Local", userId: data._id}));

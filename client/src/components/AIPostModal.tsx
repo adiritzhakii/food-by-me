@@ -60,7 +60,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       console.log('Post created:', response.data);
       dispatch(addPost(response.data));
     } catch (error: any) {
-        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+        console.log(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
 
     setPostTitle('');
