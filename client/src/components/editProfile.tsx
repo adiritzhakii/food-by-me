@@ -1,10 +1,11 @@
 import { Box, TextField, Button, Switch } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserProfile, setUserData } from '../store/authSlice';
 import { RootState } from '../store/store';
-import { usePostAuthEditProfileMutation,usePostAuthSetAvatarMutation, ProviderSchema } from '../store/serverApi'
+import { usePostAuthEditProfileMutation, ProviderSchema } from '../store/serverApi'
 import axios from 'axios'
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 interface EditProfileProps {
     isEditing: boolean,
@@ -32,7 +33,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
             const formData = new FormData();
             formData.append("image", file as File);
             try {
-                const response = await axios.post(`http://localhost:3000/auth/setAvatar?provider=${provider}`, formData, {
+                const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/auth/setAvatar?provider=${provider}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
                 });
                 dispatch(setUserData({name: updatedUser.name, avatar: response.data.avatar, email: userData?.email } as UserProfile))
@@ -86,7 +87,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               margin="normal"
               InputLabelProps={{ style: { color: 'black' } }}
               InputProps={{ style: { color: 'black' } }}
-              disabled={isUploadEnabled} // Disable when upload is enabled
+              disabled={isUploadEnabled}
             />
 
             {/* Toggle Switch */}
@@ -95,13 +96,13 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               onChange={(e) => setIsUploadEnabled(e.target.checked)}
               sx={{
                 '& .MuiSwitch-switchBase': {
-                  color: '#1E90FF', // Blue when unchecked
+                  color: '#1E90FF',
                 },
                 '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1E90FF', // Blue when checked
+                  color: '#1E90FF',
                 },
                 '& .MuiSwitch-track': {
-                  backgroundColor: '#1E90FF', // Blue track
+                  backgroundColor: '#1E90FF',
                 },
               }}
             />
@@ -111,7 +112,7 @@ export const EditProfile = ({isEditing, setIsEditing}: EditProfileProps) => {
               variant="outlined"
               component="label"
               sx={{ marginTop: '8px' }}
-              disabled={!isUploadEnabled} // Disable when URL is enabled
+              disabled={!isUploadEnabled}
             >
               Upload Image
               <input type="file" hidden onChange={handleImageUpload} />

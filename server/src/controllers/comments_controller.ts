@@ -16,6 +16,16 @@ class CommentsController extends BaseController<IComments> {
         req.body = comment;
         super.create(req, res);
     };
+
+    async getByPostId(req: Request, res: Response) {
+        try {
+          const { postId } = req.query;
+          const comments = await commentsModel.find({ postId });
+          res.json(comments);
+        } catch (error) {
+          res.status(500).json({ error: "Internal server error" });
+        }
+    }
 }
 
 

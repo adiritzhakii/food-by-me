@@ -4,6 +4,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { RootState } from '../store/store';
+import { addPost } from '../store/postsSlice';
+import { restorePreviousTab } from '../store/headerSlice';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 const modalStyle = {
   position: 'absolute',
@@ -18,12 +21,18 @@ const modalStyle = {
 };
 
 const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { token } = useSelector((state: RootState) => state.auth); 
+  const { token, userData, userId } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
 
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const handleClose = () => {
+    dispatch(restorePreviousTab());
+    onClose();
+  };
 
   const handlePostSubmit = async () => {
     const postData = {
@@ -33,10 +42,24 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     };
 
     try {
-      const response = await axios.post(`http://localhost:3000/posts`, postData, {
+      const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post created:', response.data);
+      
+      const userResponse = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const userInfo = userResponse.data;
+
+      const newPost = {
+        ...response.data,
+        user: {
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+        }
+      };
+
+      dispatch(addPost(newPost));
     } catch (error: any) {
         alert(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
@@ -45,7 +68,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     setPostContent('');
     setImage(null);
     setPreviewImage(null);
-    onClose(); // Close the modal after submission
+    handleClose();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +84,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onClose={handleClose}>
       <Box sx={modalStyle}>
         {/* Title Bar */}
         <Box
@@ -87,11 +110,11 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             🍔 Add New Post
           </Typography>
           <IconButton
-            onClick={onClose}
+            onClick={handleClose}
             sx={{
-                color: 'red', // Set the icon color to red
+                color: 'red',
                 '&:hover': {
-                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Optional hover effect for the button
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
                 },
             }}
             >
@@ -140,7 +163,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 src={previewImage}
                 alt="Preview"
                 style={{
-                  width: '40%',
+                  width: '30%',
                   maxHeight: '150px',
                   objectFit: 'cover',
                   borderRadius: '8px',
@@ -163,7 +186,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
             <Button

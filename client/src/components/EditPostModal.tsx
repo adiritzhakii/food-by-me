@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import axios from 'axios';
+import { IPostBox } from './PostBox';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { addPost } from '../store/postsSlice';
-import { restorePreviousTab } from '../store/headerSlice';
-import {SERVER_API, SERVER_PORT} from '../consts';
+import { updatePost, deletePost } from '../store/postsSlice';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
 const modalStyle = {
   position: 'absolute',
@@ -21,53 +20,63 @@ const modalStyle = {
   overflow: 'hidden',
 };
 
-const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { token } = useSelector((state: RootState) => state.auth);
+interface EditPostModalProps {
+  open: boolean;
+  onClose: () => void;
+  post: IPostBox;
+}
+
+const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) => {
+  const { token, userId } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
-  const [postTitle, setPostTitle] = useState('');
-  const [postContent, setPostContent] = useState('');
+  const [title, setTitle] = useState(post.title);
+  const [content, setContent] = useState(post.content);
   const [image, setImage] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [buttonEnable, setButtonEnable] = useState<Boolean>(false)
+  const [previewImage, setPreviewImage] = useState<string | null>(post.picture || null);
 
-  const handleClose = () => {
-    dispatch(restorePreviousTab());
-    onClose();
-  };
-
-  const handleGenerateAIPost = async () => {
-    const genrateAIData = {
-      prompt: postTitle
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    if (image) {
+      formData.append('image', image);
     }
-    const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts/generate`, genrateAIData, {
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      });
-    setPostContent(response.data.text)
-    console.log(response.data)
-  }
-
- const handlePostSubmit = async () => {
-    const postData = {
-      title: postTitle,
-      content: postContent,
-      image: image,
-    };
 
     try {
-      const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts`, postData, {
-          headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
+      const response = await axios.put(`https://${SERVER_API}:${SERVER_PORT}/api/posts/${post._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post created:', response.data);
-      dispatch(addPost(response.data));
-    } catch (error: any) {
-        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
-    }
 
-    setPostTitle('');
-    setPostContent('');
-    setImage(null);
-    setPreviewImage(null);
-    handleClose();
+      const userResponse = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/auth/getUserById/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const userInfo = userResponse.data;
+
+      const updatedPost = {
+        ...response.data,
+        user: {
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+        }
+      };
+
+      dispatch(updatePost(updatedPost));
+      onClose();
+    } catch (error: any) {
+      alert(`Update failed: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`https://${SERVER_API}:${SERVER_PORT}/api/posts/${post._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      dispatch(deletePost(post._id));
+      onClose();
+    } catch (error: any) {
+      alert(`Delete failed: ${error.response?.data?.message || error.message}`);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +92,7 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   };
 
   return (
-    <Modal open={isOpen} onClose={handleClose}>
+    <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
         {/* Title Bar */}
         <Box
@@ -106,10 +115,10 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               fontWeight: 'bold',
             }}
           >
-            🤖 Add New AI Post
+            ✏️ Edit Post
           </Typography>
           <IconButton
-            onClick={handleClose}
+            onClick={onClose}
             sx={{
               color: 'red',
               '&:hover': {
@@ -123,46 +132,13 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
         {/* Modal Content */}
         <Box sx={{ padding: '24px' }}>
-          {/* AI Generator Button */}
-            <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '24px',
-            }}
-            >
-            <Button
-                variant="contained"
-                sx={{
-                backgroundColor: '#6a0dad',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                '&:hover': {
-                    backgroundColor: '#5e0cbe',
-                },
-                }}
-                onClick={handleGenerateAIPost}
-            >
-                <RestartAltIcon />
-                Post with AI
-            </Button>
-            </Box>
           <TextField
             fullWidth
             multiline
             rows={1}
             placeholder="Post Title"
-            value={postTitle}
-            onChange={(e) => {
-              if(e.target.value.length >= 5){
-                setButtonEnable(true);
-              }else{
-                setButtonEnable(false)
-              }
-              setPostTitle(e.target.value)
-            }}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             variant="outlined"
             sx={{ marginBottom: '24px' }}
           />
@@ -171,9 +147,9 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
             fullWidth
             multiline
             rows={4}
-            placeholder="Write a prompt to our AI model about the food you want to post and it will generate a fantastic post for you!"
-            value={postContent}
-            onChange={(e) => setPostContent(e.target.value)}
+            placeholder="What did you ate recently?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             variant="outlined"
             sx={{ marginBottom: '24px' }}
           />
@@ -195,8 +171,8 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 src={previewImage}
                 alt="Preview"
                 style={{
-                  width: '30%',
-                  maxHeight: '300px',
+                  width: '40%',
+                  maxHeight: '150px',
                   objectFit: 'cover',
                   borderRadius: '8px',
                 }}
@@ -218,21 +194,23 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-            <Button variant="outlined" onClick={handleClose}>
+            <Button variant="outlined" onClick={onClose}>
               Cancel
             </Button>
             <Button
               variant="contained"
-              sx={{
-                backgroundColor: '#6a0dad',
-                '&:hover': {
-                  backgroundColor: '#5e0cbe',
-                },
-              }}
-              onClick={handlePostSubmit}
-              disabled={!buttonEnable && !postContent && !previewImage}
+              color="error"
+              onClick={handleDelete}
             >
-              Post
+              Delete
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              disabled={!content && !previewImage}
+            >
+              Save
             </Button>
           </Box>
         </Box>
@@ -241,4 +219,4 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   );
 };
 
-export default AIPostModal;
+export default EditPostModal;

@@ -1,11 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { RootState } from './store';
+import { SERVER_API, SERVER_PORT } from '../consts';
 
-const serverUrl = window.location.hostname
-// initialize an empty api service that we'll inject endpoints into later as needed
 export const emptySplitApi = createApi({
   baseQuery: fetchBaseQuery({ 
-    baseUrl: `http://${serverUrl}:3000/`,
+    baseUrl: `https://${SERVER_API}:${SERVER_PORT}/api/`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
     

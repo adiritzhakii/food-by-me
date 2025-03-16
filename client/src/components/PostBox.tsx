@@ -1,14 +1,19 @@
-import React from 'react';
-import { Card, CardActions, Typography, IconButton, Avatar, Box } from '@mui/material';
-import { ThumbUp, Comment } from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+import { Card, CardActions, Typography, IconButton, Avatar, Box, Badge } from '@mui/material';
+import { ThumbUp, Comment, Edit } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import EditPostModal from './EditPostModal';
+import CommentsModal from './CommentsModal';
+import axios from 'axios';
+import {SERVER_API, SERVER_PORT} from '../consts';
+
 
 export interface IPostBox {
   _id: string;
   title: string;
   content: string;
-  likes: number;
+  likes: string[];
   user: {
     name: string;
     avatar: string;
@@ -18,10 +23,64 @@ export interface IPostBox {
 
 interface PostBoxProps {
   post: IPostBox;
+  isEditable?: boolean;
 }
 
-const PostBox: React.FC<PostBoxProps> = ({ post }) => {
+const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
+  const { token, userId } = useSelector((state: RootState) => state.auth);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isCommentsModalOpen, setCommentsModalOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.likes.includes(userId || ''));
+  const [likes, setLikes] = useState(post.likes.length);
+  const [commentCount, setCommentCount] = useState(0);
 
+  const fetchCommentCount = async () => {
+    try {
+      const response = await axios.get(`https://${SERVER_API}:${SERVER_PORT}/api/comments?postId=${post._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      setCommentCount(response.data.length);
+    } catch (error) {
+      console.error('Error fetching comment count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentCount();
+  }, [post._id, token]);
+
+  const handleEditClick = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+  };
+
+  const handleCommentsClick = () => {
+    setCommentsModalOpen(true);
+  };
+
+  const handleCloseCommentsModal = () => {
+    setCommentsModalOpen(false);
+  };
+
+  const handleCommentUpdate = (newCount: number) => {
+    setCommentCount(newCount);
+  };
+
+  const handleLikeClick = async () => {
+    try {
+      const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts/${post._id}/like`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      setIsLiked(!isLiked);
+      setLikes(response.data.likes.length);
+      console.log('Liked the post:', response.data.likes);
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  };
 
   return (
     <div
@@ -94,16 +153,24 @@ const PostBox: React.FC<PostBoxProps> = ({ post }) => {
             sx={{
               display: 'flex',
               gap: '16px',
-              marginTop: 'auto', // Push to the bottom
+              marginTop: 'auto',
             }}
           >
-            <IconButton onClick={() => alert('Liked!')}>
-              <ThumbUp />
-            </IconButton>
-            <Typography variant="caption">{post.likes || 0}</Typography>
-            <IconButton onClick={() => alert('Commented!')}>
-              <Comment />
-            </IconButton>
+            <Badge badgeContent={likes} color={isLiked ? 'primary' : 'default'}>
+              <IconButton onClick={handleLikeClick} color={isLiked ? 'primary' : 'default'}>
+                <ThumbUp />
+              </IconButton>
+            </Badge>
+            <Badge badgeContent={commentCount} color="primary">
+              <IconButton onClick={handleCommentsClick}>
+                <Comment />
+              </IconButton>
+            </Badge>
+            {isEditable && (
+              <IconButton onClick={handleEditClick}>
+                <Edit />
+              </IconButton>
+            )}
           </CardActions>
         </Box>
 
@@ -120,22 +187,38 @@ const PostBox: React.FC<PostBoxProps> = ({ post }) => {
             borderLeft: '1px solid #ddd',
           }}
         >
-        <img
-          src={
-            post.picture && !post.picture.endsWith("undefined")
-              ? post.picture
-              : "food-by-me-icon.png"
-          }
-          alt="Post"
-          style={{
-            width: "150px",
-            height: "150px",
-            objectFit: "cover",
-            borderRadius: "8px",
-          }}
-        />
+          <img
+            src={
+              post.picture && !post.picture.endsWith("undefined")
+                ? post.picture
+                : "food-by-me-icon.png"
+            }
+            alt="Post"
+            style={{
+              width: "150px",
+              height: "150px",
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
+          />
         </Box>
       </Card>
+
+      {isEditable && (
+        <EditPostModal
+          open={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          post={post}
+        />
+      )}
+
+      <CommentsModal
+        open={isCommentsModalOpen}
+        onClose={handleCloseCommentsModal}
+        postId={post._id}
+        userToken={token || ''}
+        onCommentUpdate={handleCommentUpdate}
+      />
     </div>
   );
 };

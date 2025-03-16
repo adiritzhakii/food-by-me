@@ -8,13 +8,13 @@ export interface UserProfile {
 }
 
 interface AuthState {
-    isAuthenticated: boolean;
-    token: string | null;
-    refreshToken: string | undefined;
-    provider: string | undefined;
-    userData: UserProfile | undefined;
-    userId: string | undefined;
-  }
+  isAuthenticated: boolean;
+  token: string | null;
+  refreshToken: string | undefined;
+  provider: string | undefined;
+  userData: UserProfile | undefined;
+  userId: string | undefined;
+}
 
 const userCookie = getCookieData('user');
 
@@ -39,12 +39,7 @@ const authSlice = createSlice({
       state.userId = action.payload.userId;
     },
     logout: (state) => {
-      state.isAuthenticated = false;
-      state.token = null;
-      state.refreshToken = undefined;
-      state.provider = undefined;
-      state.userId = undefined;
-      state.userData = undefined;
+      return { ...initialState, isAuthenticated: false, token: null, refreshToken: undefined, provider: undefined, userId: undefined, userData: undefined };
     },
     setUserData: (state, action: PayloadAction<UserProfile>) => {
       state.userData = action.payload;

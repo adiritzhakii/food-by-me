@@ -7,7 +7,7 @@ class BaseController<T> {
     this.model = model;
   }
 
-  async getAll(req: Request, res: Response) {
+  async getAll(req: Request, res: Response): Promise<void> {
     const ownerFilter = req.query.owner;
     try {
       if (ownerFilter) {
@@ -20,23 +20,23 @@ class BaseController<T> {
     } catch (error) {
       res.status(400).send(error);
     }
-  };
+  }
 
-  async getById(req: Request, res: Response) {
+  async getById(req: Request, res: Response): Promise<void> {
     const itemId = req.params.id;
     try {
       const item = await this.model.findById(itemId);
       if (item === null) {
-        return res.status(404).send("not found");
+        res.status(404).send("not found");
       } else {
-        return res.status(200).send(item);
+        res.status(200).send(item);
       }
     } catch (error) {
       res.status(400).send(error);
     }
-  };
+  }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response): Promise<void> {
     const item = req.body;
     try {
       const newItem = await this.model.create(item);
@@ -44,18 +44,33 @@ class BaseController<T> {
     } catch (error) {
       res.status(400).send(error);
     }
-  };
+  }
 
-
-  async deleteItem(req: Request, res: Response) {
-    const itemnId = req.params.id;
+  async update(req: Request, res: Response): Promise<void> {
+    const itemId = req.params.id;
+    const updateData = req.body;
+    console.log("Update data:", updateData);
+    console.log("Item ID:", itemId);
     try {
-      await this.model.findByIdAndDelete(itemnId);
+      const updatedItem = await this.model.findByIdAndUpdate(itemId, updateData, { new: true });
+      if (!updatedItem) {
+        res.status(404).send("not found");
+      }
+      res.status(200).send(updatedItem);
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  }
+
+  async deleteItem(req: Request, res: Response): Promise<void> {
+    const itemId = req.params.id;
+    try {
+      await this.model.findByIdAndDelete(itemId);
       res.status(200).send();
     } catch (error) {
       res.status(400).send(error);
     }
-  };
+  }
+}
 
-};
 export default BaseController;

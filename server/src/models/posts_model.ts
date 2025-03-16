@@ -6,7 +6,7 @@ export interface IPost {
   content: string;
   owner: string;
   picture: string;
-  likes: number;
+  likes: string[]; // Updated to be an array of strings
 }
 
 const postSchema = new Schema<IPost>({
@@ -20,7 +20,10 @@ const postSchema = new Schema<IPost>({
     required: true,
   },
   picture: String,
-  likes: Number,
+  likes: {
+    type: [String],
+    default: [],
+  },
 });
 
 const postModel = mongoose.model<IPost>("Posts", postSchema);

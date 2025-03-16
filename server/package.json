@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "cp .env_dev .env && nodemon ./src/app.ts",
-    "start": "cp .env_dev .env && tsc && node ./dist/src/app.js",
+    "start": "tsc && node ./dist/src/app.js",
     "test": "cp .env_test .env && jest --detectOpenHandles --forceExit --runInBand --coverage",
     "testAuth": "cp .env_test .env && jest --detectOpenHandles --forceExit auth.test.ts",
     "testPosts": "cp .env_test .env && jest --detectOpenHandles --forceExit posts.test.ts",
@@ -14,6 +14,7 @@
   "author": "Adir Itzhaki & Eylon Fayena",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@googleapis/oauth2": "^1.0.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",

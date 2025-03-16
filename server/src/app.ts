@@ -1,10 +1,11 @@
 import appInit from "./server";
-const port = process.env.PORT;
+const port = Number(process.env.PORT) || 4000;
+const serverApi = process.env.SERVER_API || '0.0.0.0';
 
 const tmpFunc = async () => {
   const app = await appInit();
-  app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+  app.listen(port, serverApi, () => {
+    console.log(`Server is Listening at http://${serverApi}:${port}`);
   });
 };
 

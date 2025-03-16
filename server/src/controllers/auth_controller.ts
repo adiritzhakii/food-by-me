@@ -6,7 +6,8 @@ import { Document } from 'mongoose';
 import {verifyGoogleToken} from '../utils/verifyGoogleToken'
 import UserOauthModel, { IOauthUser } from '../models/oauth_user_model';
 
-const port = process.env.PORT;
+const externalServerPort = process.env.EXTERNAL_SERVER_PORT;
+const externalServerApi = process.env.EXTERNAL_SERVER_API;
 
 const register = async (req: Request, res: Response) => {
     try {
@@ -319,7 +320,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
             res.status(404).send("Profile not found");
             return;
         }
-        user.avatar = `http://localhost:${port}/api/public/${imagePath}`
+        user.avatar = `https://${externalServerApi}:${externalServerPort}/api/api/public/${imagePath}`
         user.save();
 
         res.status(200).send({avatar: user.avatar});

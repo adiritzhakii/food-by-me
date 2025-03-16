@@ -7,6 +7,7 @@ import { setCookie } from '../utils/cookie';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { login } from '../store/authSlice';
+import { setActiveTab } from '../store/headerSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -22,7 +23,6 @@ const Login = () => {
       setError('Please fill in both fields.')
       return
     }
-    // Handle login logic here
     await serverLogin({user: {email, password}})
   }
   
@@ -32,6 +32,7 @@ const Login = () => {
       if(data?.accessToken && data?.refreshToken){
         setCookie({provider: "Local",token: data.accessToken, refreshToken: data.refreshToken, userId: data._id}, 'user');
         dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Local", userId: data._id}));
+        dispatch(setActiveTab('home'));
         navigate('/home')
       }else {
         console.log("Timing error")
