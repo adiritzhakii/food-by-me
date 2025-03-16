@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom'
-import {usePostAuthLoginMutation} from '../store/serverApi';
-import OauthGoogle from '../components/OauthGoogle'
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Grid, Paper, Typography, Container, Box, InputAdornment } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { usePostAuthLoginMutation } from '../store/serverApi';
+import OauthGoogle from '../components/OauthGoogle';
 import { setCookie } from '../utils/cookie';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
@@ -10,36 +10,45 @@ import { login } from '../store/authSlice';
 import { setActiveTab } from '../store/headerSlice';
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [ serverLogin, {isError, isSuccess, error: serverError, data} ] = usePostAuthLoginMutation();
+  const [serverLogin, { isError, isSuccess, error: serverError, data }] = usePostAuthLoginMutation();
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
+    event.preventDefault();
     if (!email || !password) {
-      setError('Please fill in both fields.')
-      return
+      setError('Please fill in both fields.');
+      return;
     }
-    await serverLogin({user: {email, password}})
-  }
-  
-  useEffect(() => {
-    if(isSuccess){
-      if(data?.accessToken && data?.refreshToken){
-        setCookie({provider: "Local",token: data.accessToken, refreshToken: data.refreshToken, userId: data._id}, 'user');
-        dispatch(login({token: data.accessToken, refreshToken: data.refreshToken, provider: "Local", userId: data._id}));
-        dispatch(setActiveTab('home'));
-        navigate('/home')
-      }else {
-        console.log("Timing error")
+    try {
+      await serverLogin({ user: { email, password } }).unwrap();
+    } catch (error: any) {
+      if (error.data) {
+        setError(error.data as string);
+      } else {
+        setError('Login failed. Please try again.');
       }
-    }},[isSuccess, navigate]);
-    
+    }
+  };
+
   useEffect(() => {
-    if(isError){
+    if (isSuccess) {
+      if (data?.accessToken && data?.refreshToken) {
+        setCookie({ provider: "Local", token: data.accessToken, refreshToken: data.refreshToken, userId: data._id }, 'user');
+        dispatch(login({ token: data.accessToken, refreshToken: data.refreshToken, provider: "Local", userId: data._id }));
+        dispatch(setActiveTab('home'));
+        navigate('/home');
+      } else {
+        console.log("Timing error");
+      }
+    }
+  }, [isSuccess, navigate]);
+
+  useEffect(() => {
+    if (isError) {
       if ('data' in serverError) {
         console.error("Login failed: ", serverError.data);
         setError(serverError.data as string);
@@ -47,7 +56,11 @@ const Login = () => {
         console.error("Login failed: ", serverError);
       }
     }
-  },[isError,serverError])
+  }, [isError, serverError]);
+
+  const handleOauthError = (error: string) => {
+    setError(error);
+  };
 
   return (
     <Container component="main" maxWidth="xs" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -59,7 +72,7 @@ const Login = () => {
           Sign In
         </Typography>
 
-        <OauthGoogle route='login' />
+        <OauthGoogle route='login' onError={handleOauthError} />
 
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -98,9 +111,9 @@ const Login = () => {
           />
 
           {error && (
-          <Typography variant="body1" color="error" sx={{ marginBottom: 2 }}>
-            {error}
-          </Typography>
+            <Typography variant="body1" color="error" sx={{ marginBottom: 2 }}>
+              {error}
+            </Typography>
           )}
 
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3 }}>
@@ -110,15 +123,15 @@ const Login = () => {
         <Grid container>
           <Grid item xs>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-                <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-                    Don't have an account? Sign Up
-                </Typography>
+              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                Don't have an account? Sign Up
+              </Typography>
             </Link>
           </Grid>
         </Grid>
       </Paper>
     </Container>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
