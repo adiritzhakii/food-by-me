@@ -17,7 +17,13 @@ const modalStyle = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   borderRadius: '12px',
-  overflow: 'hidden',
+  overflowY: 'auto',
+  maxHeight: '80%',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+  '-ms-overflow-style': 'none',
+  'scrollbar-width': 'none',
 };
 
 const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
@@ -61,7 +67,7 @@ const NewPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
       dispatch(addPost(newPost));
     } catch (error: any) {
-        alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+        console.log(`Upload failed: ${error.response?.data?.message || error.message}`);
     }
 
     setPostTitle('');
