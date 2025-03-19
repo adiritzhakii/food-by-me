@@ -69,7 +69,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
       dispatch(updatePost(updatedPost));
       onClose();
     } catch (error: any) {
-      alert(`Update failed: ${error.response?.data?.message || error.message}`);
+      console.log(`Update failed: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -81,7 +81,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({ open, onClose, post }) =>
       dispatch(deletePost(post._id));
       onClose();
     } catch (error: any) {
-      alert(`Delete failed: ${error.response?.data?.message || error.message}`);
+      console.log(`Delete failed: ${error.response?.data?.message || error.message}`);
     }
   };
 
