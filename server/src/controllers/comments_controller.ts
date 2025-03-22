@@ -7,17 +7,28 @@ class CommentsController extends BaseController<IComments> {
         super(commentsModel);
     }
 
-    async create(req: Request, res: Response) {
-        const userId = req.params.userId;
-        const comment = {
-            ...req.body,
-            owner: userId,
+    async create(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.params.userId;
+            if (!userId) {
+                res.status(401).send("User ID not found");
+                return;
+            }
+            
+            const comment = {
+                ...req.body,
+                owner: userId,
+            };
+            
+            // Create a new comment with the correct owner
+            const newComment = await this.model.create(comment);
+            res.status(201).send(newComment);
+        } catch (error) {
+            res.status(400).send(error);
         }
-        req.body = comment;
-        super.create(req, res);
-    };
+    }
 
-    async getByPostId(req: Request, res: Response) {
+    async getByPostId(req: Request, res: Response): Promise<void> {
         try {
           const { postId } = req.query;
           const comments = await commentsModel.find({ postId });

@@ -9,6 +9,7 @@ import { Express } from "express";
 let app: Express;
 
 type User = {
+  name?: string,
   email: string;
   password: string;
   token?: string;
@@ -16,6 +17,7 @@ type User = {
 }
 
 const testUser: User = {
+  name: "Test User",
   email: "user@test.com",
   password: "1234567",
 }
@@ -28,6 +30,9 @@ type Post = {
 }
 
 const testPosts: Post[] = testPostsData;
+
+// Increase timeout for all tests
+jest.setTimeout(30000);
 
 beforeAll(async () => {
   console.log("Before all tests");

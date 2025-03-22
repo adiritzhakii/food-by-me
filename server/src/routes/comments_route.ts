@@ -107,7 +107,9 @@ router.get("/:id", (req, res) => {
 *       400:
 *         description: Bad request
 */
-router.post("/", authMiddleware, commentsController.create.bind(commentsController));
+router.post("/", authMiddleware, (req, res) => {
+  commentsController.create(req, res);
+});
 
 /**
 * @swagger
@@ -130,6 +132,6 @@ router.post("/", authMiddleware, commentsController.create.bind(commentsControll
 *       404:
 *         description: Comment not found
 */
-router.delete("/:id", authMiddleware, commentsController.deleteItem.bind(commentsController));
+router.delete("/:id", authMiddleware, (req, res) => commentsController.deleteItem(req, res));
 
 export default router;

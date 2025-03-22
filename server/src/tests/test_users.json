@@ -1,9 +1,11 @@
 [
     {
+        "name": "Test User",
         "email": "user@test.com",
         "password": "1234567"
     },
     {
+        "name": "Donald Trump",
         "email": "trump@gmail.com",
         "password": "MakeAmericaGreatAgain"
     }
