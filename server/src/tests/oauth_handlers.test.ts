@@ -21,17 +21,14 @@ jest.mock('../utils/verifyGoogleToken', () => ({
   })
 }));
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all OAuth handler tests");
   app = await appInit();
   await UserOauthModel.deleteMany();
 });
 
 afterAll(() => {
-  console.log("After all OAuth handler tests");
   mongoose.connection.close();
 });
 

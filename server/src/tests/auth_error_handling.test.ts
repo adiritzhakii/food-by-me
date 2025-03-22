@@ -26,18 +26,14 @@ jest.mock('../utils/verifyGoogleToken', () => ({
   })
 }));
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all auth error handling tests");
   app = await appInit();
   await userModel.deleteMany();
 });
 
 afterAll(() => {
-  console.log("After all auth error handling tests");
-  // Restore environment variables
   Object.keys(originalEnv).forEach(key => {
     process.env[key] = originalEnv[key];
   });

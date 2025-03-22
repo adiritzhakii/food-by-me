@@ -22,18 +22,15 @@ jest.mock('../utils/verifyGoogleToken', () => ({
   })
 }));
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all profile management tests");
   app = await appInit();
   await userModel.deleteMany();
   await UserOauthModel.deleteMany();
 });
 
 afterAll(() => {
-  console.log("After all profile management tests");
   mongoose.connection.close();
 });
 
@@ -133,13 +130,10 @@ describe("Profile Management Tests", () => {
         expect(response.body.name).toBe(updatedProfile.name);
       }
     } catch (error) {
-      // Silently ignore if endpoint doesn't exist
-      console.log("Auth update endpoint may not be implemented");
     }
   });
   
   test("OAuth user should be able to log in after registration", async () => {
-    // Login with the registered OAuth user
     const response = await request(app)
       .post("/auth/oauth-login")
       .send({ credential: 'valid_google_token' });
@@ -150,7 +144,6 @@ describe("Profile Management Tests", () => {
   });
   
   test("Unauthorized access to protected routes", async () => {
-    // Try to create a post without authentication
     const postData = {
       title: "Unauthorized Post",
       content: "This should fail without auth"

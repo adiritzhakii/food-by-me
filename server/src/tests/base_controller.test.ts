@@ -11,14 +11,12 @@ let app: Express;
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all base controller tests");
   app = await appInit();
   await postsModel.deleteMany();
   await userModel.deleteMany();
 });
 
 afterAll(() => {
-  console.log("After all base controller tests");
   mongoose.connection.close();
 });
 

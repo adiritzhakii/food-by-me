@@ -44,7 +44,6 @@ const testPost: Post = {
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all comments extended tests");
   app = await appInit();
   await commentsModel.deleteMany();
   await postModel.deleteMany();
@@ -71,7 +70,6 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  console.log("After all comments extended tests");
   mongoose.connection.close();
 });
 

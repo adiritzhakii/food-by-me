@@ -18,11 +18,9 @@ let app: Express;
 let userId: string;
 let accessToken: string;
 
-// Increase timeout for tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all profile tests");
   app = await appInit();
   await userModel.deleteMany();
   
@@ -40,13 +38,11 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  console.log("After all profile tests");
   mongoose.connection.close();
 });
 
 describe("User Profile Management Tests", () => {
   test("Get user data via posts", async () => {
-    // Create a post first to ensure user data is available
     const postData = {
       title: "Test Post for Profile",
       content: "This is content for profile testing"
@@ -57,7 +53,6 @@ describe("User Profile Management Tests", () => {
       .set("authorization", "JWT " + accessToken)
       .send(postData);
     
-    // Get all posts - which should include user data
     const response = await request(app)
       .get("/posts")
       .set("authorization", "JWT " + accessToken);
@@ -65,7 +60,6 @@ describe("User Profile Management Tests", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBeGreaterThan(0);
     
-    // Check that we have access to the user data from the post
     if (response.body[0].user) {
       expect(response.body[0].user.name).toBe("Profile Test User");
     }
@@ -76,13 +70,11 @@ describe("User Profile Management Tests", () => {
       name: "Updated Profile Name"
     };
     
-    // Using the auth update route if it exists
     const response = await request(app)
       .put("/auth/update")
       .set("authorization", "JWT " + accessToken)
       .send(updatedProfile);
     
-    // Check if route exists, if not, skip the assertion
     if (response.statusCode !== 404) {
       expect(response.statusCode).toBe(200);
       expect(response.body.name).toBe(updatedProfile.name);
@@ -90,7 +82,6 @@ describe("User Profile Management Tests", () => {
   });
   
   test("User can log in after registration", async () => {
-    // Log in with the registered user
     const response = await request(app)
       .post("/auth/login")
       .send({
@@ -104,7 +95,6 @@ describe("User Profile Management Tests", () => {
   });
   
   test("Unauthorized access to protected routes", async () => {
-    // Try to create a post without authentication
     const postData = {
       title: "Unauthorized Post",
       content: "This should fail without auth"

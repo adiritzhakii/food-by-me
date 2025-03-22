@@ -31,7 +31,6 @@ jest.mock('../utils/verifyGoogleToken', () => ({
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all auth edge case tests");
   app = await appInit();
   await userModel.deleteMany();
   await UserOauthModel.deleteMany();
@@ -42,10 +41,7 @@ beforeAll(async () => {
   originalRefreshTokenExpire = process.env.REFRESH_TOKEN_EXPIRE;
 });
 
-afterAll(() => {
-  console.log("After all auth edge case tests");
-  
-  // Restore original env values
+afterAll(() => {  
   process.env.TOKEN_SECRET = originalTokenSecret;
   process.env.TOKEN_EXPIRE = originalTokenExpire;
   process.env.REFRESH_TOKEN_EXPIRE = originalRefreshTokenExpire;

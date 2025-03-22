@@ -29,13 +29,11 @@ interface User {
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all auth extended tests");
   app = await appInit();
   await userModel.deleteMany();
 });
 
 afterAll(() => {
-  console.log("After all auth extended tests");
   mongoose.connection.close();
 });
 

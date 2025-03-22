@@ -31,11 +31,9 @@ type Post = {
 
 const testPosts: Post[] = testPostsData;
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all tests");
   app = await appInit();
   await postsModel.deleteMany();
 
@@ -48,7 +46,6 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  console.log("After all tests");
   mongoose.connection.close();
 });
 

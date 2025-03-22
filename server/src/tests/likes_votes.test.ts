@@ -42,11 +42,9 @@ const testUsers: User[] = [
   }
 ];
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all likes/votes tests");
   app = await appInit();
   await postsModel.deleteMany();
   await userModel.deleteMany();
@@ -64,7 +62,6 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  console.log("After all likes/votes tests");
   mongoose.connection.close();
 });
 

@@ -44,11 +44,9 @@ const createNewPost = async (accessToken: string): Promise<IPostDB> => {
   return postResponse.body;
 }
 
-// Increase timeout for all tests
 jest.setTimeout(30000);
 
 beforeAll(async () => {
-  console.log("Before all tests");
   app = await appInit();
   await commentsModel.deleteMany();
   await postModel.deleteMany();
@@ -56,7 +54,6 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  console.log("After all tests");
   mongoose.connection.close();
 });
 
