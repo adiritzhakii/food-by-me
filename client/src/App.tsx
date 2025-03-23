@@ -48,9 +48,9 @@ function App() {
           <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to='/home' />} />
 
           {/* private routes */}
-          <Route path="/" element={isAuthenticated ? <Navigate to='/home' /> : <Navigate to='/login' />} />
-          <Route path="/home" element={isAuthenticated ? <HomePage /> : <Navigate to='/login' />} />
-          <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to='/login' />} />
+          <Route path="/" element={isAuthenticated ? <Navigate to='/home' /> : <Navigate to='/register' />} />
+          <Route path="/home" element={isAuthenticated ? <HomePage /> : <Navigate to='/register' />} />
+          <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to='/register' />} />
         </Routes>
       </div>
 
