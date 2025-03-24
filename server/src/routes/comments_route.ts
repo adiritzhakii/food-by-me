@@ -31,7 +31,7 @@ import { authMiddleware } from "../controllers/auth_controller";
 
 /**
 * @swagger
-* /comments:
+* /api/comments:
 *   get:
 *     summary: Retrieve a list of comments
 *     tags: [Comments]
@@ -56,7 +56,7 @@ router.get("/", async (req, res) => {
 
 /**
 * @swagger
-* /comments/{id}:
+* /api/comments/{id}:
 *   get:
 *     summary: Retrieve a single comment by ID
 *     tags: [Comments]
@@ -83,7 +83,7 @@ router.get("/:id", (req, res) => {
 
 /**
 * @swagger
-* /comments:
+* /api/comments:
 *   post:
 *     summary: Create a new comment
 *     description: Creates a new comment
@@ -111,7 +111,7 @@ router.post("/", authMiddleware, commentsController.create.bind(commentsControll
 
 /**
 * @swagger
-* /comments/{id}:
+* /api/comments/{id}:
 *   delete:
 *     summary: Delete a comment by ID
 *     tags: [Comments]

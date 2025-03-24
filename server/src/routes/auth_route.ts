@@ -81,7 +81,7 @@ import { createImage } from "../middleware/upload-image";
 
 /**
 * @swagger
-* /auth/register:
+* /api/auth/register:
 *   post:
 *     summary: registers a new user
 *     tags: [Auth]
@@ -105,7 +105,7 @@ router.post("/register", authController.register);
 
 /**
  * @swagger
- * /auth/login:
+ * /api/auth/login:
  *   post:
  *     summary: User login
  *     description: Authenticates a user and returns JWT tokens
@@ -144,7 +144,7 @@ router.post("/login", authController.login);
 
 /**
  * @swagger
- * /auth/logout:
+ * /api/auth/logout:
  *   post:
  *     summary: User logout
  *     description: Logs out a user by invalidating the refresh token
@@ -177,7 +177,7 @@ router.post("/logout", authController.logout);
 
 /**
  * @swagger
- * /auth/refresh:
+ * /api/auth/refresh:
  *   post:
  *     summary: Refresh JWT tokens
  *     description: Refreshes the access token using the refresh token
@@ -219,7 +219,7 @@ router.post("/refresh", authController.refresh);
 
 /**
  * @swagger
- * /auth/oauth-register:
+ * /api/auth/oauth-register:
  *   post:
  *     summary: Register a new user via OAuth Google
  *     tags:
@@ -271,7 +271,7 @@ router.post('/oauth-register', registerOAuthHandler);
 
 /**
  * @swagger
- * /auth/oauth-login:
+ * /api/auth/oauth-login:
  *   post:
  *     summary: Login a user via OAuth Google
  *     tags:
@@ -290,7 +290,7 @@ router.post('/oauth-register', registerOAuthHandler);
  *       200:
  *         description: Successfully logged in
  *         content:
-*           application/json:
+ *           application/json:
  *             schema:
  *               type: object
  *               properties:
@@ -323,7 +323,7 @@ router.post('/oauth-login', loginOAuthHandler)
 
 /**
  * @swagger
- * /auth/getUserById/{id}:
+ * /api/auth/getUserById/{id}:
  *   get:
  *     summary: Get user by ID
  *     tags:
@@ -378,7 +378,7 @@ router.get('/getUserById/:id', authMiddleware, getUserById);
 
 /**
  * @swagger
- * /auth/getProfile:
+ * /api/auth/getProfile:
  *   get:
  *     summary: Get profile
  *     tags:
@@ -408,7 +408,7 @@ router.get('/getProfile', authMiddleware, getProfile);
 
 /**
  * @swagger
- * /auth/setAvatar:
+ * /api/auth/setAvatar:
  *   post:
  *     summary: Upload image and set new Avatar
  *     tags:
@@ -468,7 +468,7 @@ router.post('/setAvatar', authMiddleware, createImage, setAvatar)
 
 /**
  * @swagger
- * /auth/editProfile:
+ * /api/auth/editProfile:
  *   post:
  *     summary: Edit name and avatar properties
  *     tags:
