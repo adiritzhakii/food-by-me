@@ -13,6 +13,9 @@ import cors from "cors";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const externalServerApi = process.env.EXTERNAL_SERVER_API;
+const externalServerPort = process.env.EXTERNAL_SERVER_PORT;
+
 const db = mongoose.connection;
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
@@ -35,7 +38,7 @@ const options = {
       version: "1.0.0",
       description: "REST server including authentication using JWT",
     },
-    servers: [{ url: "http://0.0.0.0:" + process.env.PORT, },],
+    servers: [{ url: `https://${externalServerApi}:${externalServerPort}`, },],
   },
   apis: ["./src/routes/*.ts"],
 };
