@@ -31,7 +31,7 @@ import { createImage } from "../middleware/upload-image";
 
 /**
  * @swagger
- * /posts:
+ * /api/posts:
  *   get:
  *     summary: Get all posts
  *     description: Retrieves a list of all posts
@@ -60,7 +60,7 @@ router.get("/", postsController.getAll.bind(postsController));
 
 /**
  * @swagger
- * /posts/{id}:
+ * /api/posts/{id}:
  *   get:
  *     summary: Get a post by ID
  *     description: Retrieves a post by its ID
@@ -91,7 +91,7 @@ router.get("/:id", (req, res) => {
 
 /**
  * @swagger
- * /posts:
+ * /api/posts:
  *   post:
  *     summary: Create a new post
  *     description: Creates a new post
@@ -123,7 +123,7 @@ router.post("/", authMiddleware, createImage, postsController.create.bind(postsC
 
 /**
  * @swagger
- * /posts/{id}:
+ * /api/posts/{id}:
  *   put:
  *     summary: Update a post by ID
  *     description: Updates a post by its ID
@@ -164,7 +164,7 @@ router.put("/:id", authMiddleware, createImage, postsController.update.bind(post
 
 /**
  * @swagger
- * /posts/{id}:
+ * /api/posts/{id}:
  *   delete:
  *     summary: Delete a post by ID
  *     description: Deletes a post by its ID
@@ -193,7 +193,7 @@ router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsContr
 
 /**
  * @swagger
- * /posts/generate:
+ * /api/posts/generate:
  *   post:
  *     summary: Generate AI post
  *     description: Generate new AI post via GEMINI
@@ -233,7 +233,7 @@ router.post("/generate", authMiddleware, postsController.genAIPost.bind(postsCon
 
 /**
  * @swagger
- * /posts/{id}/like:
+ * /api/posts/{id}/like:
  *   post:
  *     summary: Like or unlike a post by ID
  *     description: Likes or unlikes a post by its ID

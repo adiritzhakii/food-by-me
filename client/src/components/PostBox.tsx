@@ -76,7 +76,6 @@ const PostBox: React.FC<PostBoxProps> = ({ post, isEditable = false }) => {
       });
       setIsLiked(!isLiked);
       setLikes(response.data.likes.length);
-      console.log('Liked the post:', response.data.likes);
     } catch (error) {
       console.error('Error liking the post:', error);
     }

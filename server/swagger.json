@@ -7,11 +7,16 @@
   },
   "servers": [
     {
-      "url": "http://0.0.0.0:4000"
+      "url": "https://node54.cs.colman.ac.il",
+      "description": "Production server"
+    },
+    {
+      "url": "http://0.0.0.0:4000",
+      "description": "Development server"
     }
   ],
   "paths": {
-    "/auth/register": {
+    "/api/auth/register": {
       "post": {
         "summary": "registers a new user",
         "tags": [
@@ -41,7 +46,7 @@
         }
       }
     },
-    "/auth/login": {
+    "/api/auth/login": {
       "post": {
         "summary": "User login",
         "description": "Authenticates a user and returns JWT tokens",
@@ -92,7 +97,7 @@
         }
       }
     },
-    "/auth/logout": {
+    "/api/auth/logout": {
       "post": {
         "summary": "User logout",
         "description": "Logs out a user by invalidating the refresh token",
@@ -135,7 +140,7 @@
         }
       }
     },
-    "/auth/refresh": {
+    "/api/auth/refresh": {
       "post": {
         "summary": "Refresh JWT tokens",
         "description": "Refreshes the access token using the refresh token",
@@ -191,7 +196,7 @@
         }
       }
     },
-    "/auth/oauth-register": {
+    "/api/auth/oauth-register": {
       "post": {
         "summary": "Register a new user via OAuth Google",
         "tags": [
@@ -265,7 +270,7 @@
         }
       }
     },
-    "/auth/oauth-login": {
+    "/api/auth/oauth-login": {
       "post": {
         "summary": "Login a user via OAuth Google",
         "tags": [
@@ -339,7 +344,7 @@
         }
       }
     },
-    "/auth/getUserById/{id}": {
+    "/api/auth/getUserById/{id}": {
       "get": {
         "summary": "Get user by ID",
         "tags": [
@@ -419,7 +424,7 @@
         }
       }
     },
-    "/auth/getProfile": {
+    "/api/auth/getProfile": {
       "get": {
         "summary": "Get profile",
         "tags": [
@@ -461,7 +466,7 @@
         }
       }
     },
-    "/auth/setAvatar": {
+    "/api/auth/setAvatar": {
       "post": {
         "summary": "Upload image and set new Avatar",
         "tags": [
@@ -547,7 +552,7 @@
         }
       }
     },
-    "/auth/editProfile": {
+    "/api/auth/editProfile": {
       "post": {
         "summary": "Edit name and avatar properties",
         "tags": [
@@ -642,7 +647,7 @@
         }
       }
     },
-    "/comments": {
+    "/api/comments": {
       "get": {
         "summary": "Retrieve a list of comments",
         "tags": [
@@ -702,7 +707,7 @@
         }
       }
     },
-    "/comments/{id}": {
+    "/api/comments/{id}": {
       "get": {
         "summary": "Retrieve a single comment by ID",
         "tags": [
@@ -766,7 +771,7 @@
         }
       }
     },
-    "/posts": {
+    "/api/posts": {
       "get": {
         "summary": "Get all posts",
         "description": "Retrieves a list of all posts",
@@ -847,7 +852,7 @@
         }
       }
     },
-    "/posts/{id}": {
+    "/api/posts/{id}": {
       "get": {
         "summary": "Get a post by ID",
         "description": "Retrieves a post by its ID",
@@ -979,7 +984,7 @@
         }
       }
     },
-    "/posts/generate": {
+    "/api/posts/generate": {
       "post": {
         "summary": "Generate AI post",
         "description": "Generate new AI post via GEMINI",
@@ -1035,7 +1040,7 @@
         }
       }
     },
-    "/posts/{id}/like": {
+    "/api/posts/{id}/like": {
       "post": {
         "summary": "Like or unlike a post by ID",
         "description": "Likes or unlikes a post by its ID",

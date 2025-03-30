@@ -49,7 +49,6 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       });
     setPostContent(response.data.text)
-    console.log(response.data)
   }
 
  const handlePostSubmit = async () => {
@@ -63,7 +62,6 @@ const AIPostModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       const response = await axios.post(`https://${SERVER_API}:${SERVER_PORT}/api/posts`, postData, {
           headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${token}` },
       });
-      console.log('Post created:', response.data);
       dispatch(addPost(response.data));
     } catch (error: any) {
         console.log(`Upload failed: ${error.response?.data?.message || error.message}`);
